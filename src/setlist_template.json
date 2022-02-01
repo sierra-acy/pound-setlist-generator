@@ -1,7 +1,7 @@
 {
     "beginner": {
         "15": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -21,7 +21,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -43,7 +43,7 @@
             ]
         },
         "30": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -66,7 +66,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"set",
@@ -76,7 +76,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -99,7 +99,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"lunge",
@@ -111,7 +111,7 @@
             ]
         },
         "45": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -150,7 +150,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"set",
@@ -160,7 +160,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -199,7 +199,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"lunge",
@@ -213,7 +213,7 @@
     },
     "advanced": {
         "15": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -233,7 +233,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -255,7 +255,7 @@
             ]
         },
         "30": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -278,7 +278,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"set",
@@ -288,7 +288,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -311,7 +311,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"lunge",
@@ -323,7 +323,7 @@
             ]
         },
         "45": {
-            "A": [
+            "a": [
                 {
                     "type":"warmup"
                 },
@@ -362,7 +362,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"set",
@@ -372,7 +372,7 @@
                     "type":"cooldown"
                 }
             ],
-            "B": [
+            "b": [
                 {
                     "type":"warmup"
                 },
@@ -411,7 +411,7 @@
                 {
                     "type":"set",
                     "level":1,
-                    "canBeArmTrack":true
+                    "canbearmTrack":true
                 },
                 {
                     "type":"lunge",
