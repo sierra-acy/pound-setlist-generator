@@ -68,7 +68,7 @@ class TestTemplateLoad(unittest.TestCase):
             {
                 "type":"set",
                 "level":1,
-                "canbearmTrack":True
+                "canBeArmTrack":True
             },
             {
                 "type":"lunge",
