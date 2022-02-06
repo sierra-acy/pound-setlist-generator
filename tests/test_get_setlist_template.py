@@ -24,7 +24,7 @@ class TestGetTemplate(unittest.TestCase):
                 'type': 'cooldown'
             }
         ]
-        actual = get_setlist_template('beginner','15', 'a', 'src/')
+        actual = get_setlist_template('beginner','15', 'a')
 
         self.assertEqual(expected, actual)
         
@@ -79,21 +79,18 @@ class TestGetTemplate(unittest.TestCase):
             }
         ]
 
-        actual = get_setlist_template('Advanced','45', 'B', 'src/')
+        actual = get_setlist_template('Advanced','45', 'B')
 
         self.assertEqual(expected, actual)
 
-    def test_get_bad_path(self):
-        self.assertRaises(FileNotFoundError, get_setlist_template, 'advanced', '45', 'b', 'path')
-
     def test_get_bad_difficulty(self):
-        self.assertRaises(KeyError, get_setlist_template, 'difficulty', '45', 'b', 'src/')
+        self.assertRaises(KeyError, get_setlist_template, 'difficulty', '45', 'b')
     
     def test_get_bad_length(self):
-        self.assertRaises(KeyError, get_setlist_template, 'advanced', 'length', 'b', 'src/')
+        self.assertRaises(KeyError, get_setlist_template, 'advanced', 'length', 'b')
         
     def test_get_bad_version(self):
-        self.assertRaises(KeyError, get_setlist_template, 'advanced', '45', 'version', 'src/')
+        self.assertRaises(KeyError, get_setlist_template, 'advanced', '45', 'version')
 
 
 if __name__ == '__main__':

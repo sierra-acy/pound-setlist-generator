@@ -14,7 +14,7 @@ class TestGetTracklist(unittest.TestCase):
                 'artist':'The Offspring'
             }
         ]
-        actual = get_track_list('kit', '1', 'src/')
+        actual = get_track_list('kit', '1')
 
         self.assertEqual(expected, actual)
         
@@ -26,7 +26,7 @@ class TestGetTracklist(unittest.TestCase):
             }
         ]
 
-        actual = get_track_list('T&A','2', 'src/')
+        actual = get_track_list('T&A','2')
 
         self.assertEqual(expected, actual)
 
@@ -46,17 +46,14 @@ class TestGetTracklist(unittest.TestCase):
             }
         ]
 
-        actual = get_track_list('cooldown', None, 'src/')
+        actual = get_track_list('cooldown', None)
         self.assertEqual(expected, actual)
 
-    def test_get_bad_path(self):
-        self.assertRaises(FileNotFoundError, get_track_list, 'set', '3', 'path')
-
     # def test_get_bad_track_type(self):
-    #     self.assertRaises(KeyError, get_track_list, 'type', '1', 'src/')
+    #     self.assertRaises(KeyError, get_track_list, 'type', '1')
         
     # def test_get_bad_level(self):
-    #     self.assertRaises(KeyError, get_track_list, 'lunge', 'level', 'src/')
+    #     self.assertRaises(KeyError, get_track_list, 'lunge', 'level')
 
 
 if __name__ == '__main__':

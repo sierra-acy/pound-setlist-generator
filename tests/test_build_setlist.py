@@ -4,7 +4,7 @@ from src.main import build_setlist
 
 class TestBuildSetlist(unittest.TestCase):
     def test_build_beginner_15_a(self):
-        actual = build_setlist('beginner', '15', 'a', 'src/', 'src/')
+        actual = build_setlist('beginner', '15', 'a')
         self.assertEqual(len(actual), 5)
         self.assertEqual(actual[0]['type'], 'warmup')
         self.assertEqual(actual[1]['type'], 'set')
@@ -17,7 +17,7 @@ class TestBuildSetlist(unittest.TestCase):
         
 
     def test_build_advanced_45_b(self):
-        actual = build_setlist('beginner', '45', 'a', 'src/', 'src/')
+        actual = build_setlist('beginner', '45', 'a')
         self.assertEqual(len(actual), 12)
         self.assertEqual(actual[0]['type'], 'warmup')
         self.assertEqual(actual[1]['type'], 'set')
