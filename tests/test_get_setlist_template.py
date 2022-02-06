@@ -10,15 +10,15 @@ class TestGetTemplate(unittest.TestCase):
             },
             {
                 'type': 'set',
-                'level': 1
+                'level': '1'
             },
             {
                 'type': 'kit',
-                'level': 2
+                'level': '2'
             },
             {
                 'type': 'lunge',
-                'level': 1
+                'level': '1'
             },
             {
                 'type': 'cooldown'
@@ -35,44 +35,44 @@ class TestGetTemplate(unittest.TestCase):
             },
             {
                 'type':'set',
-                'level':1
+                'level':'1'
             },
             {
                 'type':'set',
-                'level':2
+                'level':'2'
             },
             {
                 'type':'kit',
-                'level':1
+                'level':'1'
             },
             {
                 'type':'lunge',
-                'level':1
+                'level':'1'
             },
             {
                 'type':'set',
-                'level':3
+                'level':'3'
             },
             {
                 'type':'set',
-                'level':2
+                'level':'2'
             },
             {
                 'type':'kit',
-                'level':2
+                'level':'2'
             },
             {
                 'type':'t&a',
-                'level':2
+                'level':'2'
             },
             {
                 'type':'set',
-                'level':1,
+                'level':'1',
                 'canBeArmTrack':True
             },
             {
                 'type':'lunge',
-                'level':2
+                'level':'2'
             },
             {
                 'type':'cooldown'
