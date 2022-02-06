@@ -18,16 +18,9 @@ def get_track_list(track_type, level):
         data = track_list_file.read()
         data_json = json.loads(data)
         track_list = None
-        try:
-            track_list = data_json[track_type.lower()]
-        except KeyError:
-            print('No type \"{}\" found in track list.'.format(track_type))
-
+        track_list = data_json[track_type.lower()]
         if level:
-            try:
-                track_list = track_list[level]
-            except KeyError:
-                print('No level \"{}\" found in track list for type \"{}\"'.format(level, track_type))
+            track_list = track_list[level]
     return track_list
 
 def build_setlist(difficulty, length, version):
