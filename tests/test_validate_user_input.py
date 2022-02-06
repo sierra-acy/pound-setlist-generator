@@ -5,19 +5,19 @@ from src.main import validate_user_input
 class TestValidateUserInput(unittest.TestCase):
 
     def test_beginner_15_a(self):
-        self.assertTrue(validate_user_input('beginner', '15', 'a'))
+        self.assertEqual(validate_user_input('beginner', '15', 'a'), True)
 
     def test_cap_params(self):
-        self.assertTrue(validate_user_input('Beginner', '15', 'A'))
+        self.assertEqual(validate_user_input('Beginner', '15', 'A'), True)
 
     def test_bad_difficulty(self):
-        self.assertFalse(validate_user_input('difficulty', '15', 'a'))
+        self.assertEqual(validate_user_input('difficulty', '15', 'a'), False)
 
     def test_bad_length(self):
-        self.assertFalse(validate_user_input('beginner', 'length', 'a'))
+        self.assertEqual(validate_user_input('beginner', 'length', 'a'), False)
 
     def test_bad_version(self):
-        self.assertFalse(validate_user_input('beginner', '15', 'version'))
+        self.assertEqual(validate_user_input('beginner', '15', 'version'), False)
 
 if __name__ == '__main__':
     unittest.main()

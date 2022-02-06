@@ -21,6 +21,7 @@ def get_track_list(track_type, level):
         track_list = data_json[track_type.lower()]
         if level:
             track_list = track_list[level]
+    track_list_file.close()
     return track_list
 
 def build_setlist(difficulty, length, version):
