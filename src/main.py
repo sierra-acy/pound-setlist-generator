@@ -53,6 +53,20 @@ def build_setlist(difficulty, length, version):
         setlist.append(setlist_track)
     return setlist
 
+def validate_user_input(difficulty, length, version):
+    possible_difficulties = ['beginner', 'advanced']
+    possible_lengths = ['15', '30', '45']
+    possible_versions = ['a', 'b']
+
+    if not difficulty or difficulty.lower() not in possible_difficulties:
+        return False
+    if not length or length not in possible_lengths:
+        return False
+    if not version or version.lower() not in possible_versions:
+        return False
+    return True
+
+
 # def print_setlist(setlist):
     # TODO
 
