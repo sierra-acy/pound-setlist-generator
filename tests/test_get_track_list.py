@@ -1,8 +1,8 @@
 import unittest
 
-from src.main import get_song_list
+from src.main import get_track_list
 
-class TestTemplateLoad(unittest.TestCase):
+class TestGetTracklist(unittest.TestCase):
     def test_get_kit_1(self):
         expected = [
             {
@@ -14,7 +14,7 @@ class TestTemplateLoad(unittest.TestCase):
                 'artist':'The Offspring'
             }
         ]
-        actual = get_song_list('kit', '1', 'src/')
+        actual = get_track_list('kit', '1', 'src/')
 
         self.assertEqual(expected, actual)
         
@@ -26,7 +26,7 @@ class TestTemplateLoad(unittest.TestCase):
             }
         ]
 
-        actual = get_song_list('T&A','2', 'src/')
+        actual = get_track_list('T&A','2', 'src/')
 
         self.assertEqual(expected, actual)
 
@@ -46,17 +46,18 @@ class TestTemplateLoad(unittest.TestCase):
             }
         ]
 
-        actual = get_song_list('cooldown', None, 'src/')
+        actual = get_track_list('cooldown', None, 'src/')
         self.assertEqual(expected, actual)
 
     def test_get_bad_path(self):
-        self.assertRaises(FileNotFoundError, get_song_list, 'set', '3', 'path')
+        self.assertRaises(FileNotFoundError, get_track_list, 'set', '3', 'path')
 
-    def test_get_bad_track_type(self):
-        self.assertRaises(KeyError, get_song_list, 'type', '1', 'src/')
-    
-    def test_get_bad_level(self):
-        self.assertRaises(KeyError, get_song_list, 'lunge', 'level', 'src/')
+    # def test_get_bad_track_type(self):
+    #     self.assertRaises(KeyError, get_track_list, 'type', '1', 'src/')
+        
+    # def test_get_bad_level(self):
+    #     self.assertRaises(KeyError, get_track_list, 'lunge', 'level', 'src/')
+
 
 if __name__ == '__main__':
     unittest.main()
