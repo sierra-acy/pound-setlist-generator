@@ -50,10 +50,10 @@ class TestGetTracklist(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_get_bad_track_type(self):
-        self.assertRaises(KeyError, get_track_list, 'type', '1')
+        self.assertRaises(Exception, get_track_list, 'type', '1')
         
     def test_get_bad_level(self):
-        self.assertRaises(KeyError, get_track_list, 'lunge', 'level')
+        self.assertRaises(Exception, get_track_list, 'lunge', 'level')
 
 
 if __name__ == '__main__':

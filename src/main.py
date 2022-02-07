@@ -1,8 +1,35 @@
+
 import json
 import random
 
 def main():
-    template = get_setlist_template("beginner", "15", "a")
+    difficulty_choice = None
+    difficulty = 'beginner'
+    while difficulty_choice not in ['1','2']:
+        print('Enter the corresponding number to choose.')
+        difficulty_choice = input('Choose your difficulty:\n[1] Beginner\n[2]Advanced\n')
+    if difficulty_choice == '2':
+        difficulty_choice = 'advanced'
+
+    length_choice = None
+    length = '15'
+    while length_choice not in ['1','2','3']:
+        length_choice = input('Choose your class length:\n[1] 15 min\n[2] 30 min\n[3] 45 min\n')
+    if length_choice == '2':
+        length = '30'
+    elif length_choice == '3':
+        length = '45'
+    
+    version_choice = None
+    version = 'a'
+    while version_choice not in ['1','2']:
+        version_choice = input('Choose your setlist version:\n[1] A\n[2] B\n')
+    if version_choice == '2':
+        version = 'b'
+
+    setlist = build_setlist(difficulty, length, version)
+    print_setlist(setlist)
+
 
 def get_setlist_template(difficulty, length, version):
     template = None
@@ -10,17 +37,28 @@ def get_setlist_template(difficulty, length, version):
         data = template_file.read()
         data_json = json.loads(data)
         template = data_json[difficulty.lower()][length][version.lower()]
+
     template_file.close()
     return template
 
 def get_track_list(track_type, level):
+    track_list = None
     with open('src/track_list.json', 'r') as track_list_file:
         data = track_list_file.read()
         data_json = json.loads(data)
-        track_list = None
-        track_list = data_json[track_type.lower()]
+        try:
+            track_list = data_json[track_type.lower()]
+        except KeyError:
+            track_list_file.close()
+            raise Exception('No track of type {} available in list of known songs. Please choose a different setlist or update the song list.'.format(track_type))
+
         if level:
-            track_list = track_list[level]
+            try:
+                track_list = track_list[level]
+            except KeyError:
+                track_list_file.close()
+                raise Exception('No track of type {} with level {} available in list of known songs. Please choose a different setlist or update the song list.'.format(track_type, level))
+
     track_list_file.close()
     return track_list
 
@@ -43,9 +81,9 @@ def build_setlist(difficulty, length, version):
             chosen_track = track_list[track_index]
 
             setlist_track = {}
-            if type is not None:
-                setlist_track['type'] = track_type
-            setlist_track['level'] = track_level
+            setlist_track['type'] = track_type
+            if track_level is not None:
+                setlist_track['level'] = track_level
             setlist_track['name'] = chosen_track['name']
             setlist_track['artist'] = chosen_track['artist']
             if(setlist_track not in setlist):
@@ -54,6 +92,7 @@ def build_setlist(difficulty, length, version):
         setlist.append(setlist_track)
     return setlist
 
+# currently unused because user input is chosen from a list, so validation not required
 def validate_user_input(difficulty, length, version):
     possible_difficulties = ['beginner', 'advanced']
     possible_lengths = ['15', '30', '45']
@@ -68,8 +107,11 @@ def validate_user_input(difficulty, length, version):
     return True
 
 
-# def print_setlist(setlist):
-    # TODO
-
+def print_setlist(setlist):
+    for index, track in enumerate(setlist):
+        if 'level' in track:
+            print('{}. {} Level {} - {} by {}'.format(index+1, str(track['type']).capitalize(), track['level'], track['name'], track['artist']))
+        else:
+            print('{}. {} - {} by {}'.format(index+1, str(track['type']).capitalize(), track['name'], track['artist']))
 if __name__ == "__main__":
     main()
