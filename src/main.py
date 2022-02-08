@@ -122,7 +122,6 @@ def validate_user_input(difficulty, length, version):
 def replace_track(track_num, setlist):
     track_index = track_num - 1
     old_track = setlist[track_index]
-    print(old_track)
     track_type = old_track['type']
     track_level = None
     if 'level' in old_track:
