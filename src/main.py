@@ -1,6 +1,5 @@
 
 import json
-from multiprocessing.sharedctypes import Value
 import random
 
 def main():
@@ -78,14 +77,14 @@ def get_track_list(track_type, level):
             track_list = data_json[track_type.lower()]
         except KeyError:
             track_list_file.close()
-            raise Exception('No track of type {} available in list of known songs. Please choose a different setlist or update the song list.'.format(track_type))
+            raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
         if level:
             try:
                 track_list = track_list[level]
             except KeyError:
                 track_list_file.close()
-                raise Exception('No track of type {} with level {} available in list of known songs. Please choose a different setlist or update the song list.'.format(track_type, level))
+                raise Exception(f'No track of type {track_type} with level {level} available in list of known songs. Please choose a different setlist or update the song list.')
 
     track_list_file.close()
     return track_list
@@ -173,17 +172,21 @@ def replace_track_user_choice(track_num, setlist):
     # get user choice  
     track_list = get_track_list(track_type, track_level)  
     if track_level:
-        options = '{} level {} tracks:\n'.format(str(track_type).capitalize(), track_level)
+        options = f'{str(track_type).capitalize()} level {track_level} tracks:\n'
     else:
-        options = '{} tracks:\n'.format(str(track_type).capitalize())
+        options = f'{str(track_type).capitalize()} tracks:\n'
 
     for index, track in enumerate(track_list):
-        options += '{}. {} by {}\n'.format(index+1, track['name'], track['artist'])
+        name = track['name']
+        artist = track['artist']
+        options += f'{index+1}. {name} by {artist}\n'
     print(options)
     replace_with_choice = None
     while replace_with_choice not in range(1, len(track_list)+1):
         try:
-            replace_with_choice = int(input('Which track would you like to replace {} by {}? '.format(old_track['name'], old_track['artist'])))
+            old_name = old_track['name']
+            old_artist = old_track['artist']
+            replace_with_choice = int(input(f'Which track would you like to replace {old_name} by {old_artist}? '))
         except ValueError:
             print('Please enter the number of the track you wish to choose.')
     replace_with_index = int(replace_with_choice) - 1
@@ -202,7 +205,9 @@ def replace_track_user_choice(track_num, setlist):
     if new_track in setlist:
         keep_duplicate_choice = None
         while keep_duplicate_choice not in ['y', 'n', 'Y', 'N']:
-            keep_duplicate_choice = input('The track {} by {} is already included elsewhere in your setlist. Would you like to keep it [y/n]? '.format(new_track['name'], new_track['artist']))
+            new_name = new_track['name']
+            new_artist = new_track['artist']
+            keep_duplicate_choice = input(f'The track {new_name} by {new_artist} is already included elsewhere in your setlist. Would you like to keep it [y/n]? ')
         if keep_duplicate_choice == 'y':
             setlist[track_index] = new_track
         else:
@@ -216,10 +221,14 @@ def replace_track_user_choice(track_num, setlist):
 
 def print_setlist(setlist):
     for index, track in enumerate(setlist):
+        track_type = str(track['type']).capitalize()
+        track_name = track['name']
+        track_artist = track['artist']
         if 'level' in track:
-            print('{}. {} Level {} - {} by {}'.format(index+1, str(track['type']).capitalize(), track['level'], track['name'], track['artist']))
+            track_level = track['level']
+            print(f'{index+1}. {track_type} Level {track_level} - {track_name} by {track_artist}')
         else:
-            print('{}. {} - {} by {}'.format(index+1, str(track['type']).capitalize(), track['name'], track['artist']))
+            print(f'{index+1}. {track_type} - {track_name} by {track_artist}')
 
 if __name__ == "__main__":
     main()
