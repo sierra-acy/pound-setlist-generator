@@ -1,5 +1,6 @@
 
 import json
+from multiprocessing.sharedctypes import Value
 import random
 
 def main():
@@ -9,12 +10,26 @@ def main():
 
     accepted = False
     while not accepted:
-        accepted_input = input('Accept (y/n)?').lower()
+        accepted_input = None
+        while accepted_input not in ['y', 'n', 'Y', 'N']:
+            accepted_input = input('Accept (y/n)?').lower()
         if accepted_input == 'y':
             accepted = True
         else:
-            change_track_num = input('Enter the number of the track you want to change: ')
-            replace_track(int(change_track_num), setlist)
+            change_track_num = None
+            while change_track_num not in range(1, len(setlist)+1):
+                try:
+                    change_track_num = int(input('Enter the number of the track you want to change: '))
+                except ValueError:
+                    print('Please enter the number of the track you wish to replace.')
+
+            replace_method_choice = None
+            while replace_method_choice not in ['1','2']:
+                replace_method_choice = input('Would you like to replace with a random song or manually choose a song?\n[1] Random\n[2] Manual\n')
+            if replace_method_choice == '1':
+                replace_track(int(change_track_num), setlist)
+            else:
+                replace_track_user_choice(int(change_track_num), setlist)
             print_setlist(setlist)
     
 
@@ -144,6 +159,60 @@ def replace_track(track_num, setlist):
             duplicate = False
     setlist[track_index] = new_track
 
+def replace_track_user_choice(track_num, setlist):
+    # get old track details
+    track_index = track_num - 1
+    old_track = setlist[track_index]
+    track_type = old_track['type']
+
+    if 'level' in old_track:
+        track_level = old_track['level']
+    else:
+        track_level = None
+
+    # get user choice  
+    track_list = get_track_list(track_type, track_level)  
+    if track_level:
+        options = '{} level {} tracks:\n'.format(str(track_type).capitalize(), track_level)
+    else:
+        options = '{} tracks:\n'.format(str(track_type).capitalize())
+
+    for index, track in enumerate(track_list):
+        options += '{}. {} by {}\n'.format(index+1, track['name'], track['artist'])
+    print(options)
+    replace_with_choice = None
+    while replace_with_choice not in range(1, len(track_list)+1):
+        try:
+            replace_with_choice = int(input('Which track would you like to replace {} by {}? '.format(old_track['name'], old_track['artist'])))
+        except ValueError:
+            print('Please enter the number of the track you wish to choose.')
+    replace_with_index = int(replace_with_choice) - 1
+    
+    # build new track object
+    new_track = {}
+    new_track['type'] = track_type
+    if track_level:
+        new_track['level'] = track_level
+    new_track['name'] = track_list[replace_with_index]['name']
+    new_track['artist'] = track_list[replace_with_index]['artist']
+
+    # check for duplicates
+    # TODO: check for duplicates excluding track being replaced
+    # TODO: check for choosing same song as replacing
+    if new_track in setlist:
+        keep_duplicate_choice = None
+        while keep_duplicate_choice not in ['y', 'n', 'Y', 'N']:
+            keep_duplicate_choice = input('The track {} by {} is already included elsewhere in your setlist. Would you like to keep it [y/n]? '.format(new_track['name'], new_track['artist']))
+        if keep_duplicate_choice == 'y':
+            setlist[track_index] = new_track
+        else:
+            retry_choice = None
+            while retry_choice not in ['cancel', 'new']:
+                retry_choice = input('Enter \'new\' to choose another track or \'cancel\' to keep your current setlist: ')
+            if retry_choice == 'new':
+                replace_track_user_choice(track_num, setlist)
+    else:
+        setlist[track_index] = new_track
 
 def print_setlist(setlist):
     for index, track in enumerate(setlist):

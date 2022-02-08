@@ -1,7 +1,7 @@
 import unittest
 import copy
 
-from src.main import replace_track
+from src.main import replace_track, replace_track_user_choice
 
 class TestReplaceTrack(unittest.TestCase):
     def test_replace_warmup(self):
@@ -91,3 +91,39 @@ class TestReplaceTrack(unittest.TestCase):
         # replaced track is not the same as any other tracak in selist
         self.assertTrue(setlist[1] not in original_setlist)
 
+    def test_replace_4_manual(self):
+        setlist = [
+            {
+                'type':'warmup',
+                'name':'Chains',
+                'artist':'Nick Jonas'
+            },
+            {
+                'type':'set',
+                'level':'1',
+                'name':'All Shook Up',
+                'artist':'Whissell'
+            },
+            {
+                'type':'kit',
+                'level':'2',
+                'name':'Dragula',
+                'artist':'Rob Zombie'
+            },
+            {
+                'type':'lunge',
+                'level':'1',
+                'name':'Teeth',
+                'artist':'5 Seconds of Summer'
+            },
+            {
+                'type':'cooldown',
+                'name':'Feel It Still',
+                'artist':'Portugal. The Man (Lido Remix)'
+            }
+        ]
+        original_setlist = copy.deepcopy(setlist)
+        replace_track_user_choice(4, setlist)
+
+        self.assertEqual(original_setlist[3]['type'], setlist[3]['type'])
+        self.assertEqual(original_setlist[3]['level'], setlist[3]['level'])
