@@ -1,4 +1,5 @@
 
+from dataclasses import replace
 import json
 import random
 
@@ -79,7 +80,7 @@ class SetlistBuilder:
             else:
                 print(f'{index+1}. {track_type} - {track_name} by {track_artist}')
 
-    def replace_track(self, track_num):
+    def auto_replace_track(self, track_num):
         track_index = track_num - 1
         old_track = self.setlist[track_index]
         track_type = old_track['type']
@@ -106,6 +107,68 @@ class SetlistBuilder:
         self.setlist[track_index] = new_track
         return self.setlist
 
+    def get_replacement_track_options(self, track_num):
+        # get old track details
+        track_index = track_num - 1
+        old_track = self.setlist[track_index]
+        track_type = old_track['type']
+
+        if 'level' in old_track:
+            track_level = old_track['level']
+        else:
+            track_level = None
+
+        # get user choice  
+        track_list = self._get_track_list(track_type, track_level)
+        return track_list
+
+        # if track_level:
+        #     options = f'{str(track_type).capitalize()} level {track_level} tracks:\n'
+        # else:
+        #     options = f'{str(track_type).capitalize()} tracks:\n'
+
+        # for index, track in enumerate(track_list):
+        #     name = track['name']
+        #     artist = track['artist']
+        #     options += f'{index+1}. {name} by {artist}\n'
+        # return options
+    
+    def new_track_is_duplicate(self, track, old_track_num):
+        old_track_index = old_track_num-1
+        old_track = self.setlist[old_track_index]
+        # build new track object
+        new_track = {}
+        new_track['type'] = old_track['type']
+        if 'level' in old_track:
+            new_track['level'] = old_track['level']
+        new_track['name'] = track['name']
+        new_track['artist'] = track['artist']
+
+        # check for duplicates
+        # TODO: check for duplicates excluding track being replaced
+        # TODO: check for choosing same song as replacing
+        if new_track in self.setlist:
+            return True
+        return False
+
+    def replace_track(self, replace_track_num, new_track):
+        track_index = replace_track_num - 1
+        old_track = self.setlist[track_index]
+        track_type = old_track['type']
+        track_level = None
+        if 'level' in old_track:
+            track_level = old_track['level']
+
+        insert = {}
+        insert['type'] = track_type
+        if track_level:
+            insert['level'] = track_level
+        insert['name'] = new_track['name']
+        insert['artist'] = new_track['artist']
+
+        self.setlist[track_index] = insert
+        return self.setlist 
+
     def get_difficulty(self):
         return self.difficulty
     
@@ -114,81 +177,6 @@ class SetlistBuilder:
 
     def get_version(self):
         return self.version
-    
 
-# def replace_track_user_choice(track_num, setlist):
-#     # get old track details
-#     track_index = track_num - 1
-#     old_track = setlist[track_index]
-#     track_type = old_track['type']
-
-#     if 'level' in old_track:
-#         track_level = old_track['level']
-#     else:
-#         track_level = None
-
-#     # get user choice  
-#     track_list = get_track_list(track_type, track_level)  
-#     if track_level:
-#         options = f'{str(track_type).capitalize()} level {track_level} tracks:\n'
-#     else:
-#         options = f'{str(track_type).capitalize()} tracks:\n'
-
-#     for index, track in enumerate(track_list):
-#         name = track['name']
-#         artist = track['artist']
-#         options += f'{index+1}. {name} by {artist}\n'
-#     print(options)
-#     replace_with_choice = None
-#     while replace_with_choice not in range(1, len(track_list)+1):
-#         try:
-#             old_name = old_track['name']
-#             old_artist = old_track['artist']
-#             replace_with_choice = int(input(f'Which track would you like to replace {old_name} by {old_artist}? '))
-#         except ValueError:
-#             print('Please enter the number of the track you wish to choose.')
-#     replace_with_index = int(replace_with_choice) - 1
-    
-#     # build new track object
-#     new_track = {}
-#     new_track['type'] = track_type
-#     if track_level:
-#         new_track['level'] = track_level
-#     new_track['name'] = track_list[replace_with_index]['name']
-#     new_track['artist'] = track_list[replace_with_index]['artist']
-
-#     # check for duplicates
-#     # TODO: check for duplicates excluding track being replaced
-#     # TODO: check for choosing same song as replacing
-#     if new_track in setlist:
-#         keep_duplicate_choice = None
-#         while keep_duplicate_choice not in ['y', 'n', 'Y', 'N']:
-#             new_name = new_track['name']
-#             new_artist = new_track['artist']
-#             keep_duplicate_choice = input(f'The track {new_name} by {new_artist} is already included elsewhere in your setlist. Would you like to keep it [y/n]? ')
-#         if keep_duplicate_choice == 'y':
-#             setlist[track_index] = new_track
-#         else:
-#             retry_choice = None
-#             while retry_choice not in ['cancel', 'new']:
-#                 retry_choice = input('Enter \'new\' to choose another track or \'cancel\' to keep your current setlist: ')
-#             if retry_choice == 'new':
-#                 replace_track_user_choice(track_num, setlist)
-#     else:
-#         setlist[track_index] = new_track
-
-
-
-# # currently unused because user input is chosen from a list, so validation not required
-    # def validate_user_input(self, difficulty, length, version):
-    #     possible_difficulties = ['beginner', 'advanced']
-    #     possible_lengths = ['15', '30', '45']
-    #     possible_versions = ['a', 'b']
-
-    #     if not difficulty or str(difficulty).lower() not in possible_difficulties:
-    #         return False
-    #     if not length or length not in possible_lengths:
-    #         return False
-    #     if not version or str(version).lower() not in possible_versions:
-    #         return False
-    #     return True
+    def get_setlist(self):
+        return self.setlist
