@@ -144,17 +144,9 @@ class TestSetlistBuilder(unittest.TestCase):
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         track_options = setlist_builder.get_replacement_track_options('2')
+        setlist_builder.replace_track('2', track_options[0])
 
-        old_track = {}
-        old_track['name'] = setlist[1]['name']
-        old_track['artist'] = setlist[1]['artist']
-
-        if old_track not in list(track_options):
-            old_track['canBeArmTrack'] = True
-            
-        new_track = track_options[list(track_options).index(old_track)]
-
-        actual = setlist_builder.new_track_is_duplicate(new_track, '2')
+        actual = setlist_builder.new_track_is_duplicate(track_options[0], '6')
         self.assertEqual(True, actual)
 
     def test_new_track_is_duplicate_false(self):
@@ -163,26 +155,9 @@ class TestSetlistBuilder(unittest.TestCase):
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         track_options = setlist_builder.get_replacement_track_options('2')
-
-        old_track = {}
-        old_track['name'] = setlist[1]['name']
-        old_track['artist'] = setlist[1]['artist']
-
-        old_track_with_arm = {}
-        old_track_with_arm['name'] = setlist[1]['name']
-        old_track_with_arm['artist'] = setlist[1]['artist']
-        old_track_with_arm['canBeArmTrack'] = True
+        setlist[1] = track_options[0]
         
-        found = False
-        i = 0
-        while not found:
-            if track_options[i] != old_track and track_options[i] != old_track_with_arm:
-                found = True
-            else:
-                i += 1
-        new_track = track_options[i]
-        
-        actual = setlist_builder.new_track_is_duplicate(new_track, '2')
+        actual = setlist_builder.new_track_is_duplicate(track_options[1], '6')
         self.assertEqual(False, actual)
 
     ### REPLACE TRACK ###

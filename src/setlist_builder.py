@@ -143,9 +143,7 @@ class SetlistBuilder:
         new_track['artist'] = track['artist']
 
         # check for duplicates
-        # TODO: check for duplicates excluding track being replaced
-        # TODO: check for choosing same song as replacing
-        if new_track in self.setlist:
+        if new_track in self.setlist and self.setlist.index(new_track) != old_track_index:
             return True
         return False
 
