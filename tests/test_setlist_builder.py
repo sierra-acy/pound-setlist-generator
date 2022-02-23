@@ -3,8 +3,10 @@ import unittest
 from src.setlist_builder import SetlistBuilder
 
 class TestSetlistBuilder(unittest.TestCase):
+    """ Tests SetlistBuilder Class """
         
     def test_create_setlist_builder(self):
+        """ Test SetlistBuilder constructor """
         setlist_builder = SetlistBuilder('beginner', '15', 'a')
         self.assertEqual(setlist_builder.get_difficulty(), 'beginner')
         self.assertEqual(setlist_builder.get_length(), '15')
@@ -12,6 +14,7 @@ class TestSetlistBuilder(unittest.TestCase):
 
     ### PARSE SETLIST TEMPLATE ###
     def test_parse_beginner_15_a_template(self):
+        """ Test _parse_setlist_template with beginner setlist """
         expected = [
             {
                 'type': 'warmup'
@@ -37,7 +40,8 @@ class TestSetlistBuilder(unittest.TestCase):
 
         self.assertEqual(expected, actual)
         
-    def test_parse_Advanced_45_B_template(self):
+    def test_parse_advanced_45_b_template(self):
+        """ Test _parse_setlist_template with advanced setlist in caps """
         expected = [
             {
                 'type':'warmup'
@@ -94,6 +98,7 @@ class TestSetlistBuilder(unittest.TestCase):
 
     ### BUILD SETLIST ###
     def test_build_setlist_beginner_15_a(self):
+        """ Test build_setlist"""
         setlist_builder = SetlistBuilder('beginner', '15', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
@@ -106,27 +111,9 @@ class TestSetlistBuilder(unittest.TestCase):
                 self.assertTrue('level' in track)
                 self.assertTrue(slot['level'], track['level'])
 
-    ### PARSE TRACK LIST ###
-    # def test_parse_track_list_set_2(self):
-    #     setlist_builder = SetlistBuilder('beginner', '15', 'a')
-    #     track_list = setlist_builder._parse_track_list('set', '2')
-        
-    #     self.assertTrue(len(track_list) >= 1)
-    #     for track in track_list:
-    #         self.assertEqual(track['type'], 'set')
-    #         self.assertEqual(track['level'], '2')
-
-    # def test_parse_track_list_warmup(self):
-    #     setlist_builder = SetlistBuilder('beginner', '15', 'a')
-    #     track_list = setlist_builder._parse_track_list('warmup', None)
-        
-    #     self.assertTrue(len(track_list) >= 1)
-    #     for track in track_list:
-    #         self.assertEqual(track['type'], 'warmup')
-    #         self.assertFalse('level' in track)
-
     ### AUTO REPLACE TRACK ###
     def test_auto_replace_cooldown(self):
+        """ Test auto_replace_track with cooldown """
         setlist_builder = SetlistBuilder('beginner', '15', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
@@ -138,6 +125,7 @@ class TestSetlistBuilder(unittest.TestCase):
         self.assertEqual(new_cooldown_track['type'], 'cooldown')
 
     def test_auto_replace_lunge_1(self):
+        """ Test auto_replace_track with lunge """
         setlist_builder = SetlistBuilder('beginner', '15', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
@@ -148,23 +136,10 @@ class TestSetlistBuilder(unittest.TestCase):
         self.assertNotEqual(old_lunge_track, new_lunge_track)
         self.assertEqual(old_lunge_track['type'], new_lunge_track['type'])
         self.assertEqual(old_lunge_track['level'], new_lunge_track['level'])
-
-    ### GET REPLACEMENT TRACK OPTIONS ###
-    # def test_replacement_track_options_set_1(self):
-    #     setlist_builder = SetlistBuilder('beginner', '15', 'a')
-    #     setlist_builder._parse_setlist_template()
-    #     setlist = setlist_builder.build_setlist()
-    #     original_track = setlist[1]
-    #     track_options = setlist_builder.get_replacement_track_options('2')
-
-    #     for track in track_options:
-    #         print(original_track)
-    #         print(track)
-    #         self.assertEqual(original_track['type'], track['type'])
-    #         self.assertEqual(original_track['level'], track['level'])
     
     ### NEW TRACK IS DUPLICATE ###
     def test_new_track_is_duplicate_true(self):
+        """ Test new_track_is_duplicate with duplicate """
         setlist_builder = SetlistBuilder('beginner', '30', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
@@ -173,13 +148,17 @@ class TestSetlistBuilder(unittest.TestCase):
         old_track = {}
         old_track['name'] = setlist[1]['name']
         old_track['artist'] = setlist[1]['artist']
-        
+
+        if old_track not in list(track_options):
+            old_track['canBeArmTrack'] = True
+            
         new_track = track_options[list(track_options).index(old_track)]
-        
+
         actual = setlist_builder.new_track_is_duplicate(new_track, '2')
         self.assertEqual(True, actual)
 
     def test_new_track_is_duplicate_false(self):
+        """ Test new_track_is_duplicate with no dupe """
         setlist_builder = SetlistBuilder('beginner', '30', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
@@ -188,11 +167,16 @@ class TestSetlistBuilder(unittest.TestCase):
         old_track = {}
         old_track['name'] = setlist[1]['name']
         old_track['artist'] = setlist[1]['artist']
+
+        old_track_with_arm = {}
+        old_track_with_arm['name'] = setlist[1]['name']
+        old_track_with_arm['artist'] = setlist[1]['artist']
+        old_track_with_arm['canBeArmTrack'] = True
         
         found = False
         i = 0
         while not found:
-            if track_options[i] != old_track:
+            if track_options[i] != old_track and track_options[i] != old_track_with_arm:
                 found = True
             else:
                 i += 1
@@ -203,6 +187,7 @@ class TestSetlistBuilder(unittest.TestCase):
 
     ### REPLACE TRACK ###
     def test_replace_track(self):
+        """ Test replace_track """
         setlist_builder = SetlistBuilder('beginner', '30', 'a')
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()

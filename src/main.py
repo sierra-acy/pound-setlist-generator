@@ -1,6 +1,7 @@
 from setlist_builder import SetlistBuilder
 
 def main():
+    """ main runner """
     user_input = get_setlist_requirements()
     setlist_builder = SetlistBuilder(user_input[0], user_input[1], user_input[2])
     setlist = setlist_builder.build_setlist()
@@ -12,6 +13,7 @@ def main():
             setlist_builder.print_setlist()
 
 def get_setlist_requirements():
+    """ get user input for setlist params """
     difficulty_choice = None
     while difficulty_choice not in ['1','2']:
         print('Enter the corresponding number to choose.')
@@ -41,6 +43,7 @@ def get_setlist_requirements():
     return (difficulty, length, version)
 
 def get_track_change_input(setlist):
+    """ get user input to change a track in the setlist """
     change_track_num = None
     while change_track_num not in range(1, len(setlist)+1) and change_track_num != 'cancel':
         change_track_num = input('Enter the number of the track you want to change or \'cancel\' to cancel: ')
@@ -53,6 +56,7 @@ def get_track_change_input(setlist):
     return change_track_num
 
 def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num, setlist):
+    """ orchestrate track replacement - auto or manual """
     replace_method_choice = None
     while replace_method_choice not in ['1','2']:
         replace_method_choice = input('Would you like to replace with a random song or manually choose a song?\n[1] Random\n[2] Manual\n')
@@ -64,6 +68,7 @@ def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num, s
         handle_manual_replacement(setlist_builder, change_track_num)
 
 def handle_manual_replacement(setlist_builder:SetlistBuilder, change_track_num):
+    """ orchestrate manual replacement with user input """
     replacement_options = setlist_builder.get_replacement_track_options(int(change_track_num))
     setlist = setlist_builder.get_setlist()
     
@@ -107,6 +112,7 @@ def handle_manual_replacement(setlist_builder:SetlistBuilder, change_track_num):
         setlist_builder.replace_track(change_track_num, new_track)
 
 def get_accepted_input():
+    """ get user input to determine if setlist is accepted """
     accepted_input = None
     while accepted_input not in ['y', 'n', 'Y', 'N']:
         accepted_input = input('Accept [y/n]? ').lower()

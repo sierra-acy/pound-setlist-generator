@@ -2,7 +2,10 @@ import json
 import random
 
 class SetlistBuilder:
+    """ SetlistBuilder handles all setlist state changes """
     def __init__(self, difficulty, length, version):
+        """ init stores difficulty, length, version, 
+        initializes template, and initializes empty setlist"""
         self.difficulty = str(difficulty).lower()
         self.length = str(length).lower()
         self.version = str(version).lower()
@@ -10,6 +13,7 @@ class SetlistBuilder:
         self.setlist = []
         
     def _parse_setlist_template(self):
+        """ Transform setlist from JSON file text to JSON object as global var """
         template = None
         with open('src/setlist_template.json', 'r') as template_file:
             data = template_file.read()
@@ -19,6 +23,7 @@ class SetlistBuilder:
         return template
 
     def build_setlist(self):
+        """ Creates setlist for current template and vars """
         for slot in self.template:
             track_type = slot['type']
             track_level = None
@@ -47,6 +52,7 @@ class SetlistBuilder:
         return self.setlist
     
     def _parse_track_list(self, track_type, track_level):
+        """ Transforms known tracks from JSON file text to JSON object """
         track_list = None
         with open('src/track_list.json', 'r') as track_list_file:
             data = track_list_file.read()
@@ -68,6 +74,7 @@ class SetlistBuilder:
         return track_list
 
     def print_setlist(self):
+        """ Print setlist in numbered order """
         for index, track in enumerate(self.setlist):
             track_type = str(track['type']).capitalize()
             track_name = track['name']
@@ -79,6 +86,7 @@ class SetlistBuilder:
                 print(f'{index+1}. {track_type} - {track_name} by {track_artist}')
 
     def auto_replace_track(self, track_num):
+        """ Automatically replaces specified track with random track of same type """
         track_index = int(track_num) - 1
         old_track = self.setlist[track_index]
         track_type = old_track['type']
@@ -106,6 +114,7 @@ class SetlistBuilder:
         return self.setlist
 
     def get_replacement_track_options(self, track_num):
+        """ Gets list of tracks with same params as given track_num """
         # get old track details
         track_index = int(track_num) - 1
         old_track = self.setlist[track_index]
@@ -121,6 +130,8 @@ class SetlistBuilder:
         return track_list
     
     def new_track_is_duplicate(self, track, old_track_num):
+        """ Returns true if track is the same as the old track
+        or as another track in the setlist """
         old_track_index = int(old_track_num) - 1
         old_track = self.setlist[old_track_index]
         # build new track object
@@ -139,6 +150,7 @@ class SetlistBuilder:
         return False
 
     def replace_track(self, replace_track_num, new_track):
+        """ Replaces given track with given new track in setlist """
         track_index = int(replace_track_num) - 1
         old_track = self.setlist[track_index]
         track_type = old_track['type']
@@ -157,16 +169,21 @@ class SetlistBuilder:
         return self.setlist 
 
     def get_difficulty(self):
+        """ difficulty global var getter """
         return self.difficulty
     
     def get_length(self):
+        """ length global var getter """
         return self.length
 
     def get_version(self):
+        """ version global var getter """
         return self.version
 
     def get_setlist(self):
+        """ setlist global var getter """
         return self.setlist
 
     def get_template(self):
+        """ template global var getter """
         return self.template
