@@ -150,8 +150,6 @@ class TestSetlistBuilder(unittest.TestCase):
         setlist = setlist_builder.auto_replace_track('6')
         new_track = setlist[5]
 
-        # TODO: get new track from track list? assert is arm track
-
         self.assertNotEqual(old_track, new_track)
         self.assertEqual(old_track['type'], new_track['type'])
         self.assertEqual(old_track['level'], new_track['level'])
@@ -160,7 +158,7 @@ class TestSetlistBuilder(unittest.TestCase):
     ### NEW TRACK IS DUPLICATE ###
     def test_new_track_is_duplicate_true(self):
         """ Test new_track_is_duplicate with duplicate """
-        setlist_builder = SetlistBuilder('beginner', '30', 'a')
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', False)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         track_options = setlist_builder.get_replacement_track_options('2')
@@ -171,7 +169,7 @@ class TestSetlistBuilder(unittest.TestCase):
 
     def test_new_track_is_duplicate_false(self):
         """ Test new_track_is_duplicate with no dupe """
-        setlist_builder = SetlistBuilder('beginner', '30', 'a')
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', False)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         track_options = setlist_builder.get_replacement_track_options('2')
@@ -183,7 +181,7 @@ class TestSetlistBuilder(unittest.TestCase):
     ### REPLACE TRACK ###
     def test_replace_track(self):
         """ Test replace_track """
-        setlist_builder = SetlistBuilder('beginner', '30', 'a')
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', False)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         track_options = setlist_builder.get_replacement_track_options('2')
@@ -202,6 +200,31 @@ class TestSetlistBuilder(unittest.TestCase):
         new_track = track_options[i]
 
         setlist_builder.replace_track(2, new_track)
+
+    def test_replace_arm_track(self):
+        """ Test replace_track """
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', True)
+        setlist_builder._parse_setlist_template()
+        setlist = setlist_builder.build_setlist()
+        track_options = setlist_builder.get_replacement_track_options('6')
+
+        old_track = {}
+        old_track['name'] = setlist[1]['name']
+        old_track['artist'] = setlist[1]['artist']
+        
+        found = False
+        i = 0
+        while not found:
+            if track_options[i] != old_track and track_options[i]['canBeArmTrack']:
+                found = True
+            elif i == len(track_options):
+                old_name = old_track['name']
+                raise Exception(f'Arm track {old_name} cannot be replaced with a new arm track because it is the only arm track available in the list of track options: {track_options}')
+            else:
+                i += 1
+        new_track = track_options[i]
+
+        setlist_builder.replace_track(6, new_track)
 
 if __name__ == '__main__':
     unittest.main()
