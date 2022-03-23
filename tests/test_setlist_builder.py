@@ -111,6 +111,20 @@ class TestSetlistBuilder(unittest.TestCase):
                 self.assertTrue('level' in track)
                 self.assertTrue(slot['level'], track['level'])
 
+    def test_build_setlist_advanced_30_a(self):
+        """ Test build_setlist"""
+        setlist_builder = SetlistBuilder('advanced', '30', 'a')
+        setlist_builder._parse_setlist_template()
+        setlist = setlist_builder.build_setlist()
+
+        template = setlist_builder.get_template()
+        self.assertEqual(len(setlist_builder.get_template()), len(setlist))
+        for slot, track in zip(template, setlist):
+            self.assertEqual(slot['type'], track['type'])
+            if 'level' in slot:
+                self.assertTrue('level' in track)
+                self.assertTrue(slot['level'], track['level'])
+
     ### AUTO REPLACE TRACK ###
     def test_auto_replace_cooldown(self):
         """ Test auto_replace_track with cooldown """

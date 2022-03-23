@@ -63,9 +63,11 @@ class SetlistBuilder:
                 track_list_file.close()
                 raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
+            print(f'trackList for {track_type}: {track_list}')
+            print(f'type of track level is {type(track_level)}')
             if track_level:
                 try:
-                    track_list = track_list[track_level]
+                    track_list = track_list[str(track_level)]
                 except KeyError:
                     track_list_file.close()
                     raise Exception(f'No track of type {track_type} with level {track_level} available in list of known songs. Please choose a different setlist or update the song list.')
