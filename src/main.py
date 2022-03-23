@@ -1,9 +1,10 @@
+from xml.etree.ElementInclude import include
 from setlist_builder import SetlistBuilder
 
 def main():
     """ main runner """
     user_input = get_setlist_requirements()
-    setlist_builder = SetlistBuilder(user_input[0], user_input[1], user_input[2])
+    setlist_builder = SetlistBuilder(user_input[0], user_input[1], user_input[2], user_input[3])
     setlist = setlist_builder.build_setlist()
     setlist_builder.print_setlist()
     while get_accepted_input() == 'n':
@@ -40,7 +41,17 @@ def get_setlist_requirements():
         version = 'a'
     else:
         version = 'b'
-    return (difficulty, length, version)
+
+    include_arm_track_choice = None
+    if length == '30' or length == '45':
+        while include_arm_track_choice not in ['yes', 'no', 'Yes', 'No']:
+            include_arm_track_choice = input('Do you want to include an arm track? [yes/no] \n')
+        if include_arm_track_choice.lower() == 'yes':
+            include_arm_track = True
+        else:
+            include_arm_track = False
+
+    return (difficulty, length, version, include_arm_track)
 
 def get_track_change_input(setlist):
     """ get user input to change a track in the setlist """

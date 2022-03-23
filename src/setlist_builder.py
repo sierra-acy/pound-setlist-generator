@@ -3,12 +3,13 @@ import random
 
 class SetlistBuilder:
     """ SetlistBuilder handles all setlist state changes """
-    def __init__(self, difficulty, length, version):
+    def __init__(self, difficulty, length, version, include_arm_track):
         """ init stores difficulty, length, version, 
         initializes template, and initializes empty setlist"""
         self.difficulty = str(difficulty).lower()
         self.length = str(length).lower()
         self.version = str(version).lower()
+        self.include_arm_track = include_arm_track
         self.template = self._parse_setlist_template()
         self.setlist = []
         
@@ -30,7 +31,11 @@ class SetlistBuilder:
             if 'level' in slot:
                 track_level = slot['level']
             
+            
             track_list = self._parse_track_list(track_type, track_level)
+
+            if self.include_arm_track and 'canBeArmTrack' in slot:
+                track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
 
             # choose random track and ensure no duplicates
             duplicate_track = True
@@ -71,6 +76,7 @@ class SetlistBuilder:
                     raise Exception(f'No track of type {track_type} with level {track_level} available in list of known songs. Please choose a different setlist or update the song list.')
 
         track_list_file.close()
+        
         return track_list
 
     def print_setlist(self):
@@ -98,6 +104,10 @@ class SetlistBuilder:
         new_track = None
         while duplicate:
             track_list = self._parse_track_list(track_type, track_level)
+
+            if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
+                track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
+
             chosen_track_index = random.randrange(0, len(track_list))
             chosen_track = track_list[chosen_track_index]
 
@@ -127,6 +137,9 @@ class SetlistBuilder:
 
         # get user choice  
         track_list = self._parse_track_list(track_type, track_level)
+        if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
+            track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
+
         return track_list
     
     def new_track_is_duplicate(self, track, old_track_num):
@@ -185,3 +198,7 @@ class SetlistBuilder:
     def get_template(self):
         """ template global var getter """
         return self.template
+
+    def get_include_arm_track(self):
+        """ include_arm_track global var getter """
+        return self.include_arm_track

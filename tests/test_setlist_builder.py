@@ -7,10 +7,11 @@ class TestSetlistBuilder(unittest.TestCase):
         
     def test_create_setlist_builder(self):
         """ Test SetlistBuilder constructor """
-        setlist_builder = SetlistBuilder('beginner', '15', 'a')
+        setlist_builder = SetlistBuilder('beginner', '15', 'a', True)
         self.assertEqual(setlist_builder.get_difficulty(), 'beginner')
         self.assertEqual(setlist_builder.get_length(), '15')
         self.assertEqual(setlist_builder.get_version(), 'a')
+        self.assertEqual(setlist_builder.get_include_arm_track(), True)
 
     ### PARSE SETLIST TEMPLATE ###
     def test_parse_beginner_15_a_template(self):
@@ -35,7 +36,7 @@ class TestSetlistBuilder(unittest.TestCase):
                 'type': 'cooldown'
             }
         ]
-        setlist_builder = SetlistBuilder('beginner', '15', 'a')
+        setlist_builder = SetlistBuilder('beginner', '15', 'a', False)
         actual = setlist_builder._parse_setlist_template()
 
         self.assertEqual(expected, actual)
@@ -91,7 +92,7 @@ class TestSetlistBuilder(unittest.TestCase):
                 'type':'cooldown'
             }
         ]
-        setlist_builder = SetlistBuilder('Advanced', '45', 'B')
+        setlist_builder = SetlistBuilder('Advanced', '45', 'B', False)
         actual = setlist_builder._parse_setlist_template()
 
         self.assertEqual(expected, actual)
@@ -99,7 +100,7 @@ class TestSetlistBuilder(unittest.TestCase):
     ### BUILD SETLIST ###
     def test_build_setlist_beginner_15_a(self):
         """ Test build_setlist"""
-        setlist_builder = SetlistBuilder('beginner', '15', 'a')
+        setlist_builder = SetlistBuilder('beginner', '15', 'a', False)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
 
@@ -111,10 +112,26 @@ class TestSetlistBuilder(unittest.TestCase):
                 self.assertTrue('level' in track)
                 self.assertTrue(slot['level'], track['level'])
 
+    def test_build_setlist_beginner_30_a_arm(self):
+        """ Test build_setlist"""
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', True)
+        setlist_builder._parse_setlist_template()
+        setlist = setlist_builder.build_setlist()
+
+        template = setlist_builder.get_template()
+        self.assertEqual(len(setlist_builder.get_template()), len(setlist))
+        for slot, track in zip(template, setlist):
+            self.assertEqual(slot['type'], track['type'])
+            if 'level' in slot:
+                self.assertTrue('level' in track)
+                self.assertTrue(slot['level'], track['level'])    
+            if 'canBeArmTrack' in slot:
+                self.assertTrue('canBeArmTrack' in track)
+
     ### AUTO REPLACE TRACK ###
     def test_auto_replace_cooldown(self):
         """ Test auto_replace_track with cooldown """
-        setlist_builder = SetlistBuilder('beginner', '15', 'a')
+        setlist_builder = SetlistBuilder('beginner', '15', 'a', False)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
         old_cooldown_track = setlist[4]
@@ -124,18 +141,21 @@ class TestSetlistBuilder(unittest.TestCase):
         self.assertNotEqual(old_cooldown_track, new_cooldown_track)
         self.assertEqual(new_cooldown_track['type'], 'cooldown')
 
-    def test_auto_replace_lunge_1(self):
+    def test_auto_replace_arm_track(self):
         """ Test auto_replace_track with lunge """
-        setlist_builder = SetlistBuilder('beginner', '15', 'a')
+        setlist_builder = SetlistBuilder('beginner', '30', 'a', True)
         setlist_builder._parse_setlist_template()
         setlist = setlist_builder.build_setlist()
-        old_lunge_track = setlist[3]
-        setlist = setlist_builder.auto_replace_track('4')
-        new_lunge_track = setlist[3]
+        old_track = setlist[5]
+        setlist = setlist_builder.auto_replace_track('6')
+        new_track = setlist[5]
 
-        self.assertNotEqual(old_lunge_track, new_lunge_track)
-        self.assertEqual(old_lunge_track['type'], new_lunge_track['type'])
-        self.assertEqual(old_lunge_track['level'], new_lunge_track['level'])
+        # TODO: get new track from track list? assert is arm track
+
+        self.assertNotEqual(old_track, new_track)
+        self.assertEqual(old_track['type'], new_track['type'])
+        self.assertEqual(old_track['level'], new_track['level'])
+        self.assertTrue(new_track['canBeArmTrack'])
     
     ### NEW TRACK IS DUPLICATE ###
     def test_new_track_is_duplicate_true(self):
