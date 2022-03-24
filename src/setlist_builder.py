@@ -31,18 +31,22 @@ class SetlistBuilder:
             if 'level' in slot:
                 track_level = slot['level']
             
-            
-            track_list = self._parse_track_list(track_type, track_level)
+            track_options = self._parse_track_list(track_type, track_level)
 
+            isArmTrack = False
             if self.include_arm_track and 'canBeArmTrack' in slot:
-                track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
+                track_options = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_options))
+                isArmTrack = True
 
             # choose random track and ensure no duplicates
             duplicate_track = True
             setlist_track = None
             while duplicate_track:
-                track_index = random.randrange(0, len(track_list))
-                chosen_track = track_list[track_index]
+                if len(track_options) == 0:
+                    raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {slot}."')
+            
+                track_index = random.randrange(0, len(track_options))
+                chosen_track = track_options[track_index]
 
                 setlist_track = {}
                 setlist_track['type'] = track_type
@@ -50,6 +54,7 @@ class SetlistBuilder:
                     setlist_track['level'] = track_level
                 setlist_track['name'] = chosen_track['name']
                 setlist_track['artist'] = chosen_track['artist']
+                setlist_track['isArmTrack'] = isArmTrack
 
                 if(setlist_track not in self.setlist):
                     duplicate_track = False
@@ -68,8 +73,6 @@ class SetlistBuilder:
                 track_list_file.close()
                 raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
-            print(f'trackList for {track_type}: {track_list}')
-            print(f'type of track level is {type(track_level)}')
             if track_level:
                 try:
                     track_list = track_list[str(track_level)]
@@ -105,13 +108,15 @@ class SetlistBuilder:
         duplicate = True
         new_track = None
         while duplicate:
-            track_list = self._parse_track_list(track_type, track_level)
+            track_options = self._parse_track_list(track_type, track_level)
 
+            isArmTrack = False
             if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-                track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
+                track_options = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_options))
+                isArmTrack = True
 
-            chosen_track_index = random.randrange(0, len(track_list))
-            chosen_track = track_list[chosen_track_index]
+            chosen_track_index = random.randrange(0, len(track_options))
+            chosen_track = track_options[chosen_track_index]
 
             new_track = {}
             new_track['type'] = track_type
@@ -119,6 +124,7 @@ class SetlistBuilder:
                 new_track['level'] = track_level
             new_track['name'] = chosen_track['name']
             new_track['artist'] = chosen_track['artist']
+            new_track['isArmTrack'] = isArmTrack
 
             if new_track != old_track and new_track not in self.setlist:
                 duplicate = False
@@ -140,7 +146,7 @@ class SetlistBuilder:
         # get user choice  
         track_list = self._parse_track_list(track_type, track_level)
         if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-            track_list = filter(lambda track: track['canBeArmTrack'] is True, track_list)
+            track_list = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_list))
 
         return track_list
     

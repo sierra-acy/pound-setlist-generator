@@ -126,7 +126,7 @@ class TestSetlistBuilder(unittest.TestCase):
                 self.assertTrue('level' in track)
                 self.assertTrue(slot['level'], track['level'])    
             if 'canBeArmTrack' in slot:
-                self.assertTrue('canBeArmTrack' in track)
+                self.assertTrue(track['isArmTrack'])
 
     ### AUTO REPLACE TRACK ###
     def test_auto_replace_cooldown(self):
@@ -153,7 +153,7 @@ class TestSetlistBuilder(unittest.TestCase):
         self.assertNotEqual(old_track, new_track)
         self.assertEqual(old_track['type'], new_track['type'])
         self.assertEqual(old_track['level'], new_track['level'])
-        self.assertTrue(new_track['canBeArmTrack'])
+        self.assertTrue(new_track['isArmTrack'])
     
     ### NEW TRACK IS DUPLICATE ###
     def test_new_track_is_duplicate_true(self):

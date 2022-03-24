@@ -50,6 +50,8 @@ def get_setlist_requirements():
             include_arm_track = True
         else:
             include_arm_track = False
+    else:
+        include_arm_track = False
 
     return (difficulty, length, version, include_arm_track)
 
