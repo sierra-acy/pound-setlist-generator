@@ -32,10 +32,9 @@ class SetlistBuilder:
                 track_level = slot['level']
             
             track_options = self._parse_track_list(track_type, track_level)
-
             isArmTrack = False
             if self.include_arm_track and 'canBeArmTrack' in slot:
-                track_options = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_options))
+                track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
                 isArmTrack = True
 
             # choose random track and ensure no duplicates
@@ -112,7 +111,7 @@ class SetlistBuilder:
 
             isArmTrack = False
             if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-                track_options = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_options))
+                track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
                 isArmTrack = True
 
             chosen_track_index = random.randrange(0, len(track_options))
@@ -146,7 +145,7 @@ class SetlistBuilder:
         # get user choice  
         track_list = self._parse_track_list(track_type, track_level)
         if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-            track_list = list(filter(lambda track: 'canBeArmTrack' in track and track['canBeArmTrack'] is True, track_list))
+            track_list = list(filter(lambda track: track['canBeArmTrack'] is True, track_list))
 
         return track_list
     
