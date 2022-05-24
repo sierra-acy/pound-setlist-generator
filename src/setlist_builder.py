@@ -7,6 +7,7 @@ class SetlistBuilder:
         """ init stores difficulty, length, version, 
         initializes template, and initializes empty setlist"""
         self.difficulty = str(difficulty).lower()
+        # SCOTT nit: somewhat surprised the setlist length is stored as a string
         self.length = str(length).lower()
         self.version = str(version).lower()
         self.include_arm_track = include_arm_track
@@ -15,14 +16,24 @@ class SetlistBuilder:
         
     def _parse_setlist_template(self):
         """ Transform setlist from JSON file text to JSON object as global var """
+        # SCOTT nit: rather than the extra variable I think you can just return template within the `with` body
         template = None
+        # SCOTT: future improvement
+        # it feels like this path should be configurable. maybe as a command line parameter
         with open('src/setlist_template.json', 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
             template = data_json[self.difficulty][self.length][self.version]
+        # SCOTT nit: i don't think this is necessayr. Double check me but I'm pretty sure the point of the 'with' syntax
+        # is to avoid having to call close at the end of the scope
         template_file.close()
         return template
 
+    # SCOTT: it feels slightly weird that build_setlist modifies the setlist builder. I understand its caching the result
+    # so that other builder functions can mutate the setlist builder and the cached setlist but maybe that suggests that
+    # all of the "mutate a setlist functionality" should act on a setlist itself and not on the builder and the builder
+    # should just be the thing which is used build the initial setlist and provide parameters for generating new
+    # (semi random) setlists
     def build_setlist(self):
         """ Creates setlist for current template and vars """
         for slot in self.template:
@@ -40,7 +51,11 @@ class SetlistBuilder:
             # choose random track and ensure no duplicates
             duplicate_track = True
             setlist_track = None
+            # SCOTT: rather than potentially looping infinitely, why not just filter out already selected tracks from
+            # track_options array
             while duplicate_track:
+                # SCOTT nit: this doesn't seem like it's affected by retrying after a duplicate track. should this be
+                # hoisted out of the while loop?
                 if len(track_options) == 0:
                     raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {slot}."')
             
@@ -55,6 +70,8 @@ class SetlistBuilder:
                 setlist_track['artist'] = chosen_track['artist']
                 setlist_track['isArmTrack'] = isArmTrack
 
+                # SCOTT nit: parens unnecessary
+                # SCOTT nit: can be one-liner `duplicate_trace = setlist_track in self.setlist`
                 if(setlist_track not in self.setlist):
                     duplicate_track = False
             self.setlist.append(setlist_track)
@@ -69,6 +86,7 @@ class SetlistBuilder:
             try:
                 track_list = data_json[str(track_type)]
             except KeyError:
+                # SCOTT: similarly here, I'm not sure you need to close this file since you're using the `with` syntax
                 track_list_file.close()
                 raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
@@ -202,6 +220,7 @@ class SetlistBuilder:
         """ setlist global var getter """
         return self.setlist
 
+    # SCOTT: are all of these getters used? this one doesn't seem to be
     def get_template(self):
         """ template global var getter """
         return self.template
