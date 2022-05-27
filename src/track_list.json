@@ -9,6 +9,11 @@
             "name":"Chains",
             "artist":"Nick Jonas",
             "canBeArmTrack":false
+        },
+        {
+            "name":"River",
+            "artist":"Bishop Briggs",
+            "canBeArmTrack":false
         }
     ],
     "set": {
