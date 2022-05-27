@@ -10,7 +10,7 @@ def main():
     while get_accepted_input() == 'n':
         change_track_num = get_track_change_input(setlist)
         if change_track_num != 'cancel':
-            handle_track_replacement(setlist_builder, change_track_num, setlist)
+            handle_track_replacement(setlist_builder, change_track_num)
             setlist_builder.print_setlist()
 
 def get_setlist_requirements():
@@ -55,6 +55,13 @@ def get_setlist_requirements():
 
     return (difficulty, length, version, include_arm_track)
 
+def get_accepted_input():
+    """ get user input to determine if setlist is accepted """
+    accepted_input = None
+    while accepted_input not in ['y', 'n', 'Y', 'N']:
+        accepted_input = input('Accept [y/n]? ').lower()
+    return accepted_input.lower()
+
 def get_track_change_input(setlist):
     """ get user input to change a track in the setlist """
     change_track_num = None
@@ -68,7 +75,7 @@ def get_track_change_input(setlist):
             print('Please enter the number of the track you wish to replace.')
     return change_track_num
 
-def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num, setlist):
+def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num):
     """ orchestrate track replacement - auto or manual """
     replace_method_choice = None
     while replace_method_choice not in ['1','2']:
@@ -124,12 +131,7 @@ def handle_manual_replacement(setlist_builder:SetlistBuilder, change_track_num):
     else:
         setlist_builder.replace_track(change_track_num, new_track)
 
-def get_accepted_input():
-    """ get user input to determine if setlist is accepted """
-    accepted_input = None
-    while accepted_input not in ['y', 'n', 'Y', 'N']:
-        accepted_input = input('Accept [y/n]? ').lower()
-    return accepted_input.lower()
+
 
 if __name__ == "__main__":
     main()
