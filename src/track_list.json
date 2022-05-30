@@ -123,6 +123,11 @@
                 "name":"My Songs Know What You Did in the Dark",
                 "artist":"Fall Out Boy",
                 "canBeArmTrack":false
+            },
+            {
+                "name":"Too Loud",
+                "artist":"Icon for Hire",
+                "canBeArmTrack":false
             }
         ]
     },
