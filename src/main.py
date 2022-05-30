@@ -1,10 +1,11 @@
+import argparse
 from setlist_builder import SetlistBuilder
 
 def main():
-
     """ main runner """
-    setlist_params = prompt_setlist_requirements()
-    setlist_builder = SetlistBuilder(setlist_params["difficulty"], setlist_params["length"], setlist_params["version"], setlist_params["include_arm_track"])
+
+    args = get_args()
+    setlist_builder = SetlistBuilder(args['diff'], args['len'], args['version'], args['arm'])
     setlist = setlist_builder.build_setlist()
     print_setlist(setlist)
 
@@ -13,48 +14,14 @@ def main():
         if change_track_num:
             handle_track_replacement(setlist_builder, change_track_num, setlist)
 
-# SCOTT: UX food-for-thought 
-# you only ever prompt for these requirements once at the very start of the program
-# consider passing these requirements in as command line arguments instead (or maybe just
-# allowing that as an option). Definitely not a priority of things to worry about but
-# if you find yourself wanting to run this quicker and more often, cmdline params can be useful
-def prompt_setlist_requirements():
-    """ get user input for setlist params """
-    difficulty_choice = None
-    while difficulty_choice not in ['1','2']:
-        print('Enter the corresponding number to choose.')
-        difficulty_choice = input('Choose your difficulty:\n[1] Beginner\n[2] Advanced\n')
-    if difficulty_choice == '1':
-        difficulty = 'beginner'
-    else:
-        difficulty = 'advanced'
-
-    length_choice = None
-    while length_choice not in ['1','2','3']:
-        length_choice = input('Choose your class length:\n[1] 15 min\n[2] 30 min\n[3] 45 min\n')
-    if length_choice == '1':
-        length = '15'
-    elif length_choice == '2':
-        length = '30'
-    else:
-        length = '45'
-    
-    version_choice = None
-    while version_choice not in ['1','2']:
-        version_choice = input('Choose your setlist version:\n[1] A\n[2] B\n')
-    if version_choice == '1':
-        version = 'a'
-    else:
-        version = 'b'
-
-    include_arm_track = None
-    include_arm_track_choice = None
-    if length == '30' or length == '45':
-        while include_arm_track_choice not in ['y', 'n']:
-            include_arm_track_choice = input('Do you want to include an arm track? [y/n] \n').lower()
-        include_arm_track = include_arm_track_choice == 'y'
-
-    return {"difficulty":difficulty, "length":length, "version":version, "include_arm_track":include_arm_track}
+def get_args():
+    """ Setup argument parser """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-diff', '-d', required=True, help='difficulty level', choices=['beginner', 'advanced'])
+    parser.add_argument('-len', '-l', required=True, help='length of the setlist', choices=['15', '30', '45'])
+    parser.add_argument('-version', '-v', required=True, help="version A or B of the setlist", choices=['a', 'b'])
+    parser.add_argument('-arm', '-a', default='true', help="true means an arm track will be included, false means one may or may not be incldued", choices=['true', 'false'])
+    return vars(parser.parse_args())
 
 def get_track_change_input(setlist):
     """ get user input to change a track in the setlist """
