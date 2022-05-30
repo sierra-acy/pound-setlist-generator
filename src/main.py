@@ -5,7 +5,7 @@ def main():
     """ main runner """
 
     args = get_args()
-    setlist_builder = SetlistBuilder(args['diff'], args['len'], args['version'], args['arm'])
+    setlist_builder = SetlistBuilder(args['diff'], args['len'], args['version'], args['arm'], args['template'], args['songs'])
     setlist = setlist_builder.build_setlist()
     print_setlist(setlist)
 
@@ -21,6 +21,8 @@ def get_args():
     parser.add_argument('-len', '-l', required=True, help='length of the setlist', choices=['15', '30', '45'])
     parser.add_argument('-version', '-v', required=True, help="version A or B of the setlist", choices=['a', 'b'])
     parser.add_argument('-arm', '-a', default='true', help="true means an arm track will be included, false means one may or may not be incldued", choices=['true', 'false'])
+    parser.add_argument('-template', '-t', default='src/setlist_template.json', help='location of template file to use')
+    parser.add_argument('-songs', '-s', default='src/track_list.json', help='location of the list of known songs')
     return vars(parser.parse_args())
 
 def get_track_change_input(setlist):

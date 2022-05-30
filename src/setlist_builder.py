@@ -3,20 +3,21 @@ import random
 
 class SetlistBuilder:
     """ SetlistBuilder handles all setlist state changes """
-    def __init__(self, difficulty, length, version, include_arm_track):
+    def __init__(self, difficulty, length, version, include_arm_track, template_location, songs_location):
         """ init stores difficulty, length, version, 
         initializes template, and initializes empty setlist"""
         self.difficulty = str(difficulty).lower()
         self.length = str(length).lower()
         self.version = str(version).lower()
         self.include_arm_track = include_arm_track
-        self.template = self._parse_setlist_template()
+        self.template = self._parse_setlist_template(template_location)
+        self.songs_location = songs_location
         
-    def _parse_setlist_template(self):
+    def _parse_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
         # SCOTT: future improvement
         # it feels like this path should be configurable. maybe as a command line parameter
-        with open('src/setlist_template.json', 'r') as template_file:
+        with open(template_location, 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
             template = data_json[self.difficulty][self.length][self.version]
@@ -63,7 +64,7 @@ class SetlistBuilder:
 
     def _parse_track_list(self, track_type, track_level):
         """ Transforms known tracks from JSON file text to JSON object """
-        with open('src/track_list.json', 'r') as track_list_file:
+        with open(self.songs_location, 'r') as track_list_file:
             data = track_list_file.read()
             data_json = json.loads(data)
             try:
