@@ -15,8 +15,7 @@ class SetlistBuilder:
         
     def _parse_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
-        # SCOTT: future improvement
-        # it feels like this path should be configurable. maybe as a command line parameter
+
         with open(template_location, 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
@@ -27,17 +26,16 @@ class SetlistBuilder:
         """ Creates setlist for current template and vars """
         setlist = []
         for slot in self.template:
-            track_type = slot['type']
-            track_level = None
-            if 'level' in slot:
-                track_level = slot['level']
-
-            setlist_track = self._build_new_track(track_type, track_level, setlist, slot)
+            setlist_track = self._build_new_track(setlist, slot)
             setlist.append(setlist_track)
         return setlist
     
-    def _build_new_track(self, track_type, track_level, setlist, track_template):
-        """ Chooses and builds a single setlist track after filtering for dupes and requirements"""        
+    def _build_new_track(self, setlist, track_template):
+        """ Chooses and builds a single setlist track after filtering for dupes and requirements"""
+        track_type = track_template['type']
+        track_level = None
+        if 'level' in track_template:
+            track_level = track_template['level']
         track_options = self._parse_track_list(track_type, track_level)
 
         is_arm_track = False
@@ -48,7 +46,7 @@ class SetlistBuilder:
         track_options = list(filter(lambda track, track_type=track_type, track_level=track_level, is_arm_track=is_arm_track: {"name":track['name'], "artist":track['artist'], "type":track_type, "level":track_level, "isArmTrack":is_arm_track} not in setlist, track_options))
         
         if len(track_options) == 0:
-                raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {slot}."')
+                raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {track_template}."')
     
         chosen_track = track_options[random.randrange(0, len(track_options))]
         
@@ -110,23 +108,6 @@ class SetlistBuilder:
         track_options = list(filter(lambda track, track_type=track_type, track_level=track_level, is_arm_track=is_arm_track: {"name":track['name'], "artist":track['artist'], "type":track_type, "level":track_level, "isArmTrack":is_arm_track} not in setlist, track_options))
 
         return track_options
-    
-    # def new_track_is_duplicate(self, setlist, track, old_track_num):
-    #     """ Returns true if track is the same as the old track
-    #     or as another track in the setlist """
-    #     old_track_index = int(old_track_num) - 1
-    #     old_track = setlist[old_track_index]
-    #     # build new track object
-    #     new_track = {}
-    #     new_track['type'] = old_track['type']
-    #     new_track['level'] = old_track['level']
-    #     new_track['name'] = track['name']
-    #     new_track['artist'] = track['artist']
-
-    #     # check for duplicates
-    #     if new_track in setlist and setlist.index(new_track) != old_track_index:
-    #         return True
-    #     return False
 
     def replace_track(self, setlist, replace_track_num, new_track):
         """ Replaces given track with given new track in setlist """
@@ -134,15 +115,17 @@ class SetlistBuilder:
         old_track = setlist[track_index]
         track_type = old_track['type']
         track_level = old_track['level']
+        is_arm_track = old_track['isArmTrack']
 
         insert = {}
         insert['type'] = track_type
         insert['level'] = track_level
         insert['name'] = new_track['name']
         insert['artist'] = new_track['artist']
+        insert['isArmTrack'] = is_arm_track
 
         setlist[track_index] = insert
-        return setlist  
+        return setlist
 
     def get_difficulty(self):
         """ difficulty global var getter """
@@ -159,3 +142,7 @@ class SetlistBuilder:
     def get_include_arm_track(self):
         """ include arm track global var getter """
         return self.include_arm_track
+
+    def get_template(self):
+        """ template global var getter """
+        return self.template
