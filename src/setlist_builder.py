@@ -80,11 +80,7 @@ class SetlistBuilder:
     def auto_replace_track(self, setlist, track_num):
         """ Automatically replaces specified track with random track of same type """
         track_index = int(track_num) - 1
-        old_track = setlist[track_index]
-        track_type = old_track['type']
-        track_level = old_track['level']
-
-        new_track = self._build_new_track(track_type, track_level, setlist, self.template[track_index])
+        new_track = self._build_new_track(setlist, self.template[track_index])
 
         setlist[track_index] = new_track
         return setlist
