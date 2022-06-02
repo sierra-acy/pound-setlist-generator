@@ -246,8 +246,8 @@
                     "level":"2"
                 },
                 {
-                    "type":"set",
-                    "level":"3"
+                    "type":"lunge",
+                    "level":"2"
                 },
                 {
                     "type":"cooldown"
@@ -297,8 +297,8 @@
                     "level":"1"
                 },
                 {
-                    "type":"set",
-                    "level":"3"
+                    "type":"lunge",
+                    "level":"2"
                 },
                 {
                     "type":"kit",

@@ -1,59 +1,29 @@
-from xml.etree.ElementInclude import include
+import argparse
 from setlist_builder import SetlistBuilder
 
 def main():
     """ main runner """
-    user_input = get_setlist_requirements()
-    setlist_builder = SetlistBuilder(user_input[0], user_input[1], user_input[2], user_input[3])
+
+    args = get_args()
+    setlist_builder = SetlistBuilder(args['diff'], args['len'], args['version'], args['arm'], args['template'], args['songs'])
     setlist = setlist_builder.build_setlist()
-    setlist_builder.print_setlist()
-    while get_accepted_input() == 'n':
+    print_setlist(setlist)
+
+    while not prompt_setlist_accepted():
         change_track_num = get_track_change_input(setlist)
-        if change_track_num != 'cancel':
-            handle_track_replacement(setlist_builder, change_track_num)
-            setlist_builder.print_setlist()
+        if change_track_num:
+            handle_track_replacement(setlist_builder, change_track_num, setlist)
 
-def get_setlist_requirements():
-    """ get user input for setlist params """
-    difficulty_choice = None
-    while difficulty_choice not in ['1','2']:
-        print('Enter the corresponding number to choose.')
-        difficulty_choice = input('Choose your difficulty:\n[1] Beginner\n[2] Advanced\n')
-    if difficulty_choice == '1':
-        difficulty = 'beginner'
-    else:
-        difficulty = 'advanced'
-
-    length_choice = None
-    while length_choice not in ['1','2','3']:
-        length_choice = input('Choose your class length:\n[1] 15 min\n[2] 30 min\n[3] 45 min\n')
-    if length_choice == '1':
-        length = '15'
-    elif length_choice == '2':
-        length = '30'
-    else:
-        length = '45'
-    
-    version_choice = None
-    while version_choice not in ['1','2']:
-        version_choice = input('Choose your setlist version:\n[1] A\n[2] B\n')
-    if version_choice == '1':
-        version = 'a'
-    else:
-        version = 'b'
-
-    include_arm_track_choice = None
-    if length == '30' or length == '45':
-        while include_arm_track_choice not in ['yes', 'no', 'Yes', 'No']:
-            include_arm_track_choice = input('Do you want to include an arm track? [yes/no] \n')
-        if include_arm_track_choice.lower() == 'yes':
-            include_arm_track = True
-        else:
-            include_arm_track = False
-    else:
-        include_arm_track = False
-
-    return (difficulty, length, version, include_arm_track)
+def get_args():
+    """ Setup argument parser """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-diff', '-d', required=True, help='difficulty level', choices=['beginner', 'advanced'])
+    parser.add_argument('-len', '-l', required=True, help='length of the setlist', choices=['15', '30', '45'])
+    parser.add_argument('-version', '-v', required=True, help="version A or B of the setlist", choices=['a', 'b'])
+    parser.add_argument('-arm', '-a', default='true', help="true means an arm track will be included, false means one may or may not be incldued", choices=['true', 'false'])
+    parser.add_argument('-template', '-t', default='src/setlist_template.json', help='location of template file to use')
+    parser.add_argument('-songs', '-s', default='src/track_list.json', help='location of the list of known songs')
+    return vars(parser.parse_args())
 
 def get_accepted_input():
     """ get user input to determine if setlist is accepted """
@@ -65,32 +35,29 @@ def get_accepted_input():
 def get_track_change_input(setlist):
     """ get user input to change a track in the setlist """
     change_track_num = None
-    while change_track_num not in range(1, len(setlist)+1) and change_track_num != 'cancel':
-        change_track_num = input('Enter the number of the track you want to change or \'cancel\' to cancel: ')
-        if change_track_num == 'cancel':
-            return 'cancel'
+    while change_track_num not in range(1, len(setlist)+1):
+        selected_track_num = input('Enter the number of the track you want to change or \'cancel\' to cancel: ')
+        if selected_track_num == 'cancel':
+            return None
         try:
-            change_track_num = int(change_track_num)
+            change_track_num = int(selected_track_num)
         except ValueError:
-            print('Please enter the number of the track you wish to replace.')
+            print('Please enter a number or \'cancel\'.')
     return change_track_num
 
 def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num):
     """ orchestrate track replacement - auto or manual """
-    replace_method_choice = None
-    while replace_method_choice not in ['1','2']:
-        replace_method_choice = input('Would you like to replace with a random song or manually choose a song?\n[1] Random\n[2] Manual\n')
+    selected_replacement_type = prompt_replacement_type()
 
-    if replace_method_choice == '1': # Random
-        setlist_builder.auto_replace_track(int(change_track_num))
-        # setlist_builder.print_setlist()
+    if selected_replacement_type == 'random':
+        setlist = setlist_builder.auto_replace_track(setlist, change_track_num)
     else: # Manual
-        handle_manual_replacement(setlist_builder, change_track_num)
+        setlist = handle_manual_replacement(setlist_builder, setlist, change_track_num)
+    print_setlist(setlist)
 
-def handle_manual_replacement(setlist_builder:SetlistBuilder, change_track_num):
+def handle_manual_replacement(setlist_builder:SetlistBuilder, setlist, change_track_num):
     """ orchestrate manual replacement with user input """
-    replacement_options = setlist_builder.get_replacement_track_options(int(change_track_num))
-    setlist = setlist_builder.get_setlist()
+    replacement_options = setlist_builder.get_replacement_track_options(setlist, change_track_num)
     
     # prepare prompt
     old_name = setlist[change_track_num-1]['name']
@@ -111,27 +78,40 @@ def handle_manual_replacement(setlist_builder:SetlistBuilder, change_track_num):
 
     new_track = replacement_options[replace_with_choice-1]
 
-    # check for duplicates
-    if setlist_builder.new_track_is_duplicate(new_track, change_track_num):
-        keep_duplicate_choice = None
-        while keep_duplicate_choice not in ['y', 'n', 'Y', 'N']:
-            new_name = new_track['name']
-            new_artist = new_track['artist']
-            keep_duplicate_choice = input(f'The track {new_name} by {new_artist} is already included elsewhere in your setlist. Would you like to include it anyway [y/n]? ')
-        
-        if keep_duplicate_choice.lower() == 'y':
-            setlist = setlist_builder.replace_track(change_track_num, new_track)
-        else:
-            retry_choice = None
-            while retry_choice not in ['cancel', 'new']:
-                retry_choice = input('Enter \'new\' to choose another track or \'cancel\' to keep your current setlist: ')
-            
-            if retry_choice == 'new':
-                handle_manual_replacement(setlist_builder, change_track_num)
+    return setlist_builder.replace_track(setlist, change_track_num, new_track)
+
+def prompt_replacement_type():
+    """ get user input ot determine which type of track replacement to use """
+    replace_method_choice = None
+    while replace_method_choice not in ['1','2']:
+        replace_method_choice = input('Would you like to replace with a random song or manually choose a song?\n[1] Random\n[2] Manual\n')
+    if replace_method_choice == '1':
+        return 'random'
     else:
-        setlist_builder.replace_track(change_track_num, new_track)
+        return 'manual'
 
+def prompt_setlist_accepted():
+    """ get user input to determine if setlist is accepted """
+    accepted_input = None
+    while accepted_input not in ['y', 'n']: 
+        accepted_input = input('Accept [y/n]? ').lower()
 
+    if accepted_input == 'y':
+        return True
+    else:
+        return False
+
+def print_setlist(setlist):
+    """ Print setlist in numbered order """
+    for index, track in enumerate(setlist):
+        track_type = str(track['type']).capitalize()
+        track_name = track['name']
+        track_artist = track['artist']
+        track_level = track['level']
+        if track_type != 'Warmup' and track_type != 'Cooldown':
+            print(f'{index+1}. {track_type} Level {track_level} - {track_name} by {track_artist}')
+        else:
+            print(f'{index+1}. {track_type} - {track_name} by {track_artist}')
 
 if __name__ == "__main__":
     main()

@@ -3,188 +3,125 @@ import random
 
 class SetlistBuilder:
     """ SetlistBuilder handles all setlist state changes """
-    def __init__(self, difficulty, length, version, include_arm_track):
+    def __init__(self, difficulty, length, version, include_arm_track, template_location, songs_location):
         """ init stores difficulty, length, version, 
         initializes template, and initializes empty setlist"""
         self.difficulty = str(difficulty).lower()
         self.length = str(length).lower()
         self.version = str(version).lower()
         self.include_arm_track = include_arm_track
-        self.template = self._parse_setlist_template()
-        self.setlist = []
+        self.template = self._parse_setlist_template(template_location)
+        self.songs_location = songs_location
         
-    def _parse_setlist_template(self):
+    def _parse_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
-        template = None
-        with open('src/setlist_template.json', 'r') as template_file:
+
+        with open(template_location, 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
             template = data_json[self.difficulty][self.length][self.version]
-        template_file.close()
-        return template
+            return template
 
     def build_setlist(self):
         """ Creates setlist for current template and vars """
+        setlist = []
         for slot in self.template:
-            track_type = slot['type']
-            track_level = None
-            if 'level' in slot:
-                track_level = slot['level']
-            
-            track_options = self._parse_track_list(track_type, track_level)
-            isArmTrack = False
-            if self.include_arm_track and 'canBeArmTrack' in slot:
-                track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
-                isArmTrack = True
-
-            # choose random track and ensure no duplicates
-            duplicate_track = True
-            setlist_track = None
-            while duplicate_track:
-                if len(track_options) == 0:
-                    raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {slot}."')
-            
-                track_index = random.randrange(0, len(track_options))
-                chosen_track = track_options[track_index]
-
-                setlist_track = {}
-                setlist_track['type'] = track_type
-                if track_level is not None:
-                    setlist_track['level'] = track_level
-                setlist_track['name'] = chosen_track['name']
-                setlist_track['artist'] = chosen_track['artist']
-                setlist_track['isArmTrack'] = isArmTrack
-
-                if(setlist_track not in self.setlist):
-                    duplicate_track = False
-            self.setlist.append(setlist_track)
-        return self.setlist
+            setlist_track = self._build_new_track(setlist, slot)
+            setlist.append(setlist_track)
+        return setlist
     
+    def _build_new_track(self, setlist, track_template):
+        """ Chooses and builds a single setlist track after filtering for dupes and requirements"""
+        track_type = track_template['type']
+        track_level = None
+        if 'level' in track_template:
+            track_level = track_template['level']
+        track_options = self._parse_track_list(track_type, track_level)
+
+        is_arm_track = False
+        if 'canBeArmTrack' in track_template and self.include_arm_track:
+            track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
+            is_arm_track = True
+
+        track_options = list(filter(lambda track, track_type=track_type, track_level=track_level, is_arm_track=is_arm_track: {"name":track['name'], "artist":track['artist'], "type":track_type, "level":track_level, "isArmTrack":is_arm_track} not in setlist, track_options))
+        
+        if len(track_options) == 0:
+                raise Exception(f'No tracks available of type {track_type} with level {track_level} for slot {track_template}."')
+    
+        chosen_track = track_options[random.randrange(0, len(track_options))]
+        
+        new_track = {}
+        new_track['type'] = track_type
+        new_track['level'] = track_level
+        new_track['name'] = chosen_track['name']
+        new_track['artist'] = chosen_track['artist']
+        new_track['isArmTrack'] = is_arm_track
+
+        return new_track
+
+
     def _parse_track_list(self, track_type, track_level):
         """ Transforms known tracks from JSON file text to JSON object """
-        track_list = None
-        with open('src/track_list.json', 'r') as track_list_file:
+        with open(self.songs_location, 'r') as track_list_file:
             data = track_list_file.read()
             data_json = json.loads(data)
             try:
                 track_list = data_json[str(track_type)]
             except KeyError:
-                track_list_file.close()
                 raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
             if track_level:
                 try:
                     track_list = track_list[str(track_level)]
                 except KeyError:
-                    track_list_file.close()
                     raise Exception(f'No track of type {track_type} with level {track_level} available in list of known songs. Please choose a different setlist or update the song list.')
+            return track_list
 
-        track_list_file.close()
-        
-        return track_list
-
-    def print_setlist(self):
-        """ Print setlist in numbered order """
-        for index, track in enumerate(self.setlist):
-            track_type = str(track['type']).capitalize()
-            track_name = track['name']
-            track_artist = track['artist']
-            if 'level' in track:
-                track_level = track['level']
-                print(f'{index+1}. {track_type} Level {track_level} - {track_name} by {track_artist}')
-            else:
-                print(f'{index+1}. {track_type} - {track_name} by {track_artist}')
-
-    def auto_replace_track(self, track_num):
+    def auto_replace_track(self, setlist, track_num):
         """ Automatically replaces specified track with random track of same type """
         track_index = int(track_num) - 1
-        old_track = self.setlist[track_index]
-        track_type = old_track['type']
-        track_level = None
-        if 'level' in old_track:
-            track_level = old_track['level']
+        new_track = self._build_new_track(setlist, self.template[track_index])
 
-        duplicate = True
-        new_track = None
-        while duplicate:
-            track_options = self._parse_track_list(track_type, track_level)
+        setlist[track_index] = new_track
+        return setlist
 
-            isArmTrack = False
-            if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-                track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
-                isArmTrack = True
-
-            chosen_track_index = random.randrange(0, len(track_options))
-            chosen_track = track_options[chosen_track_index]
-
-            new_track = {}
-            new_track['type'] = track_type
-            if track_level:
-                new_track['level'] = track_level
-            new_track['name'] = chosen_track['name']
-            new_track['artist'] = chosen_track['artist']
-            new_track['isArmTrack'] = isArmTrack
-
-            if new_track != old_track and new_track not in self.setlist:
-                duplicate = False
-        self.setlist[track_index] = new_track
-        return self.setlist
-
-    def get_replacement_track_options(self, track_num):
+    def get_replacement_track_options(self, setlist, track_num):
         """ Gets list of tracks with same params as given track_num """
         # get old track details
         track_index = int(track_num) - 1
-        old_track = self.setlist[track_index]
+        old_track = setlist[track_index]
         track_type = old_track['type']
-
-        if 'level' in old_track:
-            track_level = old_track['level']
-        else:
-            track_level = None
-
-        # get user choice  
-        track_list = self._parse_track_list(track_type, track_level)
-        if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
-            track_list = list(filter(lambda track: track['canBeArmTrack'] is True, track_list))
-
-        return track_list
+        track_level = old_track['level']
     
-    def new_track_is_duplicate(self, track, old_track_num):
-        """ Returns true if track is the same as the old track
-        or as another track in the setlist """
-        old_track_index = int(old_track_num) - 1
-        old_track = self.setlist[old_track_index]
-        # build new track object
-        new_track = {}
-        new_track['type'] = old_track['type']
-        if 'level' in old_track:
-            new_track['level'] = old_track['level']
-        new_track['name'] = track['name']
-        new_track['artist'] = track['artist']
+        # get user choice  
+        track_options = self._parse_track_list(track_type, track_level)
+        is_arm_track = False
+        if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
+            track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
+            is_arm_track = True
 
-        # check for duplicates
-        if new_track in self.setlist and self.setlist.index(new_track) != old_track_index:
-            return True
-        return False
+        # filter duplicates
+        track_options = list(filter(lambda track, track_type=track_type, track_level=track_level, is_arm_track=is_arm_track: {"name":track['name'], "artist":track['artist'], "type":track_type, "level":track_level, "isArmTrack":is_arm_track} not in setlist, track_options))
 
-    def replace_track(self, replace_track_num, new_track):
+        return track_options
+
+    def replace_track(self, setlist, replace_track_num, new_track):
         """ Replaces given track with given new track in setlist """
         track_index = int(replace_track_num) - 1
-        old_track = self.setlist[track_index]
+        old_track = setlist[track_index]
         track_type = old_track['type']
-        track_level = None
-        if 'level' in old_track:
-            track_level = old_track['level']
+        track_level = old_track['level']
+        is_arm_track = old_track['isArmTrack']
 
         insert = {}
         insert['type'] = track_type
-        if track_level:
-            insert['level'] = track_level
+        insert['level'] = track_level
         insert['name'] = new_track['name']
         insert['artist'] = new_track['artist']
+        insert['isArmTrack'] = is_arm_track
 
-        self.setlist[track_index] = insert
-        return self.setlist 
+        setlist[track_index] = insert
+        return setlist
 
     def get_difficulty(self):
         """ difficulty global var getter """
@@ -198,14 +135,10 @@ class SetlistBuilder:
         """ version global var getter """
         return self.version
 
-    def get_setlist(self):
-        """ setlist global var getter """
-        return self.setlist
+    def get_include_arm_track(self):
+        """ include arm track global var getter """
+        return self.include_arm_track
 
     def get_template(self):
         """ template global var getter """
         return self.template
-
-    def get_include_arm_track(self):
-        """ include_arm_track global var getter """
-        return self.include_arm_track
