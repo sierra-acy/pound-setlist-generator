@@ -25,6 +25,13 @@ def get_args():
     parser.add_argument('-songs', '-s', default='src/track_list.json', help='location of the list of known songs')
     return vars(parser.parse_args())
 
+def get_accepted_input():
+    """ get user input to determine if setlist is accepted """
+    accepted_input = None
+    while accepted_input not in ['y', 'n', 'Y', 'N']:
+        accepted_input = input('Accept [y/n]? ').lower()
+    return accepted_input.lower()
+
 def get_track_change_input(setlist):
     """ get user input to change a track in the setlist """
     change_track_num = None
@@ -38,7 +45,7 @@ def get_track_change_input(setlist):
             print('Please enter a number or \'cancel\'.')
     return change_track_num
 
-def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num, setlist):
+def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num):
     """ orchestrate track replacement - auto or manual """
     selected_replacement_type = prompt_replacement_type()
 

@@ -9,6 +9,11 @@
             "name":"Chains",
             "artist":"Nick Jonas",
             "canBeArmTrack":false
+        },
+        {
+            "name":"River",
+            "artist":"Bishop Briggs",
+            "canBeArmTrack":false
         }
     ],
     "set": {
@@ -117,6 +122,11 @@
             {
                 "name":"My Songs Know What You Did in the Dark",
                 "artist":"Fall Out Boy",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Too Loud",
+                "artist":"Icon for Hire",
                 "canBeArmTrack":false
             }
         ]
