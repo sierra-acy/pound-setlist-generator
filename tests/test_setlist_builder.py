@@ -1,16 +1,19 @@
 import unittest
-
 from src.setlist_builder import SetlistBuilder
 
 class TestSetlistBuilder(unittest.TestCase):
     """ Tests SetlistBuilder Class """
-        
+    
     template_loc = 'C:\\Users\Sierra\\Projects\\pound-setlist-generator\src\setlist_template.json'
     track_list_loc = 'C:\\Users\Sierra\\Projects\\pound-setlist-generator\src\\track_list.json'
 
-    def test_create_setlist_builder(self):
+    # input: difficulty, length, version, inlcude_arm_track, template_loc, track_list_loc
+    # output: vars set to each of above, template
+    def test_init_setlist_builder(self):
         """ Test SetlistBuilder constructor """
+
         setlist_builder = SetlistBuilder('beginner', '15', 'a', True, self.template_loc, self.track_list_loc)
+
         self.assertEqual(setlist_builder.get_difficulty(), 'beginner')
         self.assertEqual(setlist_builder.get_length(), '15')
         self.assertEqual(setlist_builder.get_version(), 'a')

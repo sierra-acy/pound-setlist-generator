@@ -45,7 +45,7 @@ def get_track_change_input(setlist):
             print('Please enter a number or \'cancel\'.')
     return change_track_num
 
-def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num):
+def handle_track_replacement(setlist_builder:SetlistBuilder, change_track_num, setlist):
     """ orchestrate track replacement - auto or manual """
     selected_replacement_type = prompt_replacement_type()
 
