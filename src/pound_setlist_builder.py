@@ -1,7 +1,7 @@
 import json
 import random
 
-class SetlistBuilder:
+class PoundSetlistBuilder:
     """ SetlistBuilder handles all setlist state changes """
     def __init__(self, difficulty, length, version, include_arm_track, template_location, songs_location):
         """ init stores difficulty, length, version, 
@@ -10,10 +10,10 @@ class SetlistBuilder:
         self.length = str(length).lower()
         self.version = str(version).lower()
         self.include_arm_track = include_arm_track
-        self.template = self._parse_setlist_template(template_location)
+        self.template = self._parse_pound_setlist_template(template_location)
         self.songs_location = songs_location
         
-    def _parse_setlist_template(self, template_location):
+    def _parse_pound_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
 
         with open(template_location, 'r') as template_file:
@@ -36,7 +36,7 @@ class SetlistBuilder:
         track_level = None
         if 'level' in track_template:
             track_level = track_template['level']
-        track_options = self._parse_track_list(track_type, track_level)
+        track_options = self._parse_pound_track_list(track_type, track_level)
 
         is_arm_track = False
         if 'canBeArmTrack' in track_template and self.include_arm_track:
@@ -60,22 +60,22 @@ class SetlistBuilder:
         return new_track
 
 
-    def _parse_track_list(self, track_type, track_level):
+    def _parse_pound_track_list(self, track_type, track_level):
         """ Transforms known tracks from JSON file text to JSON object """
-        with open(self.songs_location, 'r') as track_list_file:
-            data = track_list_file.read()
+        with open(self.songs_location, 'r') as pound_track_list_file:
+            data = pound_track_list_file.read()
             data_json = json.loads(data)
             try:
-                track_list = data_json[str(track_type)]
+                pound_track_list = data_json[str(track_type)]
             except KeyError:
                 raise Exception(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.')
 
             if track_level:
                 try:
-                    track_list = track_list[str(track_level)]
+                    pound_track_list = pound_track_list[str(track_level)]
                 except KeyError:
                     raise Exception(f'No track of type {track_type} with level {track_level} available in list of known songs. Please choose a different setlist or update the song list.')
-            return track_list
+            return pound_track_list
 
     def auto_replace_track(self, setlist, track_num):
         """ Automatically replaces specified track with random track of same type """
@@ -94,7 +94,7 @@ class SetlistBuilder:
         track_level = old_track['level']
     
         # get user choice  
-        track_options = self._parse_track_list(track_type, track_level)
+        track_options = self._parse_pound_track_list(track_type, track_level)
         is_arm_track = False
         if 'canBeArmTrack' in self.template[track_index] and self.include_arm_track:
             track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
