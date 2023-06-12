@@ -1,10 +1,10 @@
-import argparse
 from pound_setlist_builder import PoundSetlistBuilder
 
 def main_pound():
     """ runner for POUND workflow """
     setlist_params = get_setlist_params()
-    pound_setlist_builder = PoundSetlistBuilder(setlist_params[0], setlist_params[1], setlist_params[2], setlist_params[3], setlist_params[4], setlist_params[5])
+    pound_setlist_builder = PoundSetlistBuilder(setlist_params[0], setlist_params[1], setlist_params[2], 
+                                                setlist_params[3], setlist_params[4], setlist_params[5])
     setlist = pound_setlist_builder.build_setlist()
     print_setlist(setlist)
 
@@ -19,8 +19,8 @@ def get_setlist_params():
                      {'name':'length', 'options':['15', '30', '45']},
                      {'name':'version', 'options':['a', 'b']},
                      {'name':'arm inclusion', 'options':['true', 'false']},
-                     {'name':'template location'},
-                     {'name':'songlist location'}]
+                     {'name':'template file name'},
+                     {'name':'songlist file name'}]
     
     choices = []
     for param in params:
@@ -38,17 +38,6 @@ def get_setlist_params():
             choice = input(prompt)
         choices.append(choice)
     return choices
-
-def get_args():
-    """ Setup argument parser """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-diff', '-d', required=True, help='difficulty level', choices=['beginner', 'advanced'])
-    parser.add_argument('-len', '-l', required=True, help='length of the setlist', choices=['15', '30', '45'])
-    parser.add_argument('-version', '-v', required=True, help="version A or B of the setlist", choices=['a', 'b'])
-    parser.add_argument('-arm', '-a', default='true', help="true means an arm track will be included, false means one may or may not be incldued", choices=['true', 'false'])
-    parser.add_argument('-template', '-t', default='src/pound_setlist_template.json', help='location of template file to use')
-    parser.add_argument('-songs', '-s', default='src/pound_track_list.json', help='location of the list of known songs')
-    return vars(parser.parse_args())
 
 def get_accepted_input():
     """ get user input to determine if setlist is accepted """

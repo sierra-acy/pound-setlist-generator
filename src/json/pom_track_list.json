@@ -1,0 +1,80 @@
+{
+    "warmup":[
+        {
+            "name":"Shout Out to My Ex",
+            "artist":"Little Mix"
+        }
+    ],
+    "prancing":[
+        {
+            "name":"Haterz",
+            "artist":"Todrick Hall"
+        },
+        {
+            "name":"Ooh Ahh... Just A Little Bit",
+            "artist":"Gina G."
+        }
+    ],
+    "standard":[
+        {
+            "name":"Dynamite",
+            "artist":"BTS"
+        },
+        {
+            "name":"Bye Bye Bye",
+            "artist":"*NSYNC"
+        },
+        {
+            "name":"Low (feat. T-Pain)",
+            "artist":"Flo Rida, T-Pain"
+        },
+        {
+            "name":"All About That Bass",
+            "artist":"Meghan Trainor"
+        },
+        {
+            "name":"Pancake (feat. Ashnikko)",
+            "artist":"JADED< Ashnikko"
+        },
+        {
+            "name":"Truth Hurts",
+            "artist":"Lizzo"
+        },
+        {
+            "name":"Run the World (Girls)",
+            "artist":"Beyonce"
+        },
+        {
+            "name":"NO",
+            "artist":"Meghan Trainor"
+        },
+        {
+            "name":"Sorry Not Sorry",
+            "artist":"Demi Lovato"
+        },
+        {
+            "name":"I Love It (feat. Charli XCX)",
+            "artist":"Icona Pop, Charli XCX"
+        }
+    ],
+    "kick":[
+        {
+            "name":"Peanut Butter Jelly",
+            "artist":"Galantis"
+        },
+        {
+            "name":"It's Raining Men",
+            "artist":"The Weather Girls"
+        }
+    ],
+    "cooldown":[
+        {
+            "name":"Daylight",
+            "artist":"Harry Styles"
+        },
+        {
+            "name":"Flowers",
+            "artist":"Miley Cyrus"
+        }
+    ]
+}

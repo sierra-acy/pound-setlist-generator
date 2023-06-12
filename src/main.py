@@ -4,12 +4,15 @@ from main_pom import main_pom
 
 def main():
     """ main runner """
-    
+
     args = get_args()
-    if(args['format'] == 'pound'):
+    class_format = args['format']
+    if(class_format == 'pound'):
         main_pound()
-    else:
+    elif(class_format == 'pom'):
         main_pom()
+    else:
+        print(f'{class_format} is not a valid format option. Please use \'pound\' or \'pom\'.')
 
 def get_args():
     """ Setup argument parser """

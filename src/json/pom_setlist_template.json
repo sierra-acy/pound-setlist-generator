@@ -1,0 +1,86 @@
+{
+    "20": [
+        {
+            "type":"warmup"
+        },
+        {
+            "type":"prancing"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type":"kick"
+        },
+        {
+            "type":"cooldown"
+        }
+    ],
+    "30": [
+        {
+            "type":"warmup"
+        },
+        {
+            "type":"prancing"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type":"kick"
+        },
+        {
+            "type":"cooldown"
+        }
+    ],
+    "50": [
+        {
+            "type":"warmup"
+        },
+        {
+            "type":"prancing"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type": "standard"
+        },
+        {
+            "type":"kick"
+        },
+        {
+            "type":"cooldown"
+        }
+    ]
+}
