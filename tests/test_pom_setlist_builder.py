@@ -27,6 +27,43 @@ class TestPoundSetlistBuilder(unittest.TestCase):
         for slot, track in zip(template, setlist):
             self.assertEqual(slot['type'], track['type'])
 
+    def test_get_replacement_options(self):
+        """ Test getting replacement options for regular track """
+        pom_setlist_builder = PomSetlistBuilder('20', self.template_name, self.track_list_name)
+        setlist = pom_setlist_builder.build_setlist()
+        track_options = pom_setlist_builder.get_replacement_track_options(setlist, '2')
+        old_track = setlist[1]
+
+        full_list = pom_setlist_builder._parse_pom_track_list(old_track['type'])
+        for option in track_options:
+            this_track = {'name': option['name'], 'artist': option['artist']}
+            self.assertTrue(this_track in full_list)
+
+    def test_replace_track(self):
+        """ Test replace_track """
+        pom_setlist_builder = PomSetlistBuilder('20', self.template_name, self.track_list_name)
+        setlist = pom_setlist_builder.build_setlist()
+
+        track_options = pom_setlist_builder.get_replacement_track_options(setlist, '2')
+        old_track = setlist[1]
+        new_track = track_options[0]
+        self.assertTrue(new_track['name'] != old_track['name'] or new_track['artist'] != old_track['artist'])
+
+        pom_setlist_builder.replace_track(setlist, '2', new_track)
+        self.assertEqual(setlist[1]['name'], new_track['name'])
+        self.assertEqual(setlist[1]['artist'], new_track['artist'])        
+
+    def test_auto_replace_cooldown(self):
+        """ Test auto_replace_track with cooldown """
+        pom_setlist_builder = PomSetlistBuilder('20', self.template_name, self.track_list_name)
+        setlist = pom_setlist_builder.build_setlist()
+        old_cooldown_track = setlist[4]
+        setlist = pom_setlist_builder.auto_replace_track(setlist, '5')
+        new_cooldown_track = setlist[4]
+
+        self.assertNotEqual(old_cooldown_track, new_cooldown_track)
+        self.assertEqual(new_cooldown_track['type'], 'cooldown')
+
     def test_parse_pom_setlist_template(self):
         """ Test _parse_pom_setlist_template with 30 min setlist """
         
@@ -72,7 +109,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
         track_template = { "type":"standard" }
         pom_setlist_builder = PomSetlistBuilder('20', self.template_name, self.track_list_name)
         setlist = pom_setlist_builder.build_setlist()
-        new_track = pom_setlist_builder._build_new_track(track_template)
+        new_track = pom_setlist_builder._build_new_track(setlist, track_template)
         self.assertEqual(new_track['type'], track_template['type'])
         self.assertIsNotNone(new_track['name'])
         self.assertIsNotNone(new_track['artist'])
