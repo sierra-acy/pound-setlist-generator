@@ -4,15 +4,15 @@ from src.pound_setlist_builder import PoundSetlistBuilder
 class TestPoundSetlistBuilder(unittest.TestCase):
     """ Tests PoundSetlistBuilder Class """
     
-    template_loc = 'C:\\Users\Sierra\\Projects\\pound-setlist-generator\src\pound_setlist_template.json'
-    pound_track_list_loc = 'C:\\Users\Sierra\\Projects\\pound-setlist-generator\src\\pound_track_list.json'
+    template_name = 'pound_setlist_template.json'
+    track_list_name = 'pound_track_list.json'
 
-    # input: difficulty, length, version, inlcude_arm_track, template_loc, pound_track_list_loc
+    # input: difficulty, length, version, inlcude_arm_track, template_name, track_list_name
     # output: vars set to each of above, template
     def test_init_pound_setlist_builder(self):
         """ Test PoundSetlistBuilder constructor """
 
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', True, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', True, self.template_name, self.track_list_name)
 
         self.assertEqual(pound_setlist_builder.get_difficulty(), 'beginner')
         self.assertEqual(pound_setlist_builder.get_length(), '15')
@@ -43,8 +43,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
                 'type': 'cooldown'
             }
         ]
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
-        actual = pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
+        actual = pound_setlist_builder._parse_pound_setlist_template(self.template_name)
 
         self.assertEqual(expected, actual)
         
@@ -99,16 +99,16 @@ class TestPoundSetlistBuilder(unittest.TestCase):
                 'type':'cooldown'
             }
         ]
-        pound_setlist_builder = PoundSetlistBuilder('Advanced', '45', 'B', False, self.template_loc, self.pound_track_list_loc)
-        actual = pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('Advanced', '45', 'B', False, self.template_name, self.track_list_name)
+        actual = pound_setlist_builder._parse_pound_setlist_template(self.template_name)
 
         self.assertEqual(expected, actual)
 
     ### BUILD SETLIST ###
     def test_build_setlist_beginner_15_a(self):
         """ Test build_setlist"""
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
 
         template = pound_setlist_builder.get_template()
@@ -121,8 +121,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_build_setlist_beginner_30_a_arm(self):
         """ Test build_setlist"""
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
 
         template = pound_setlist_builder.get_template()
@@ -142,7 +142,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
                     "type":"set",
                     "level":"1"
                 }
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         new_track = pound_setlist_builder._build_new_track(setlist, track_template)
         self.assertEqual(new_track['type'], track_template['type'])
@@ -158,7 +158,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
                     "level":"1",
                     "canBeArmTrack":True
                 }
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         new_track = pound_setlist_builder._build_new_track(setlist, track_template)
         self.assertEqual(new_track['type'], track_template['type'])
@@ -172,7 +172,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
         track_template = {
                     "type":"warmup"
                 }
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         new_track = pound_setlist_builder._build_new_track(setlist, track_template)
         self.assertEqual(new_track['type'], track_template['type'])
@@ -184,7 +184,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
     ### PARSE TRACK LIST ###
     def test_parse_pound_track_list(self):
         """ Test parsing track list from JSON file to JSON object """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         pound_track_list = pound_setlist_builder._parse_pound_track_list('lunge', '2')
         self.assertTrue(len(pound_track_list) > 0)
         single_track = pound_track_list[0]
@@ -195,8 +195,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
     ### AUTO REPLACE TRACK ###
     def test_auto_replace_cooldown(self):
         """ Test auto_replace_track with cooldown """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
         old_cooldown_track = setlist[4]
         setlist = pound_setlist_builder.auto_replace_track(setlist, '5')
@@ -207,8 +207,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_auto_replace_arm_track(self):
         """ Test auto_replace_track with lunge """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', True, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
         old_track = setlist[5]
         setlist = pound_setlist_builder.auto_replace_track(setlist, '6')
@@ -222,7 +222,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
     ### GET REPLACEMENT TRACK OPTIONS ###
     def test_get_replacement_options(self):
         """ Test getting replacement options for regular track """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '2')
         old_track = setlist[1]
@@ -234,7 +234,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_get_replacement_options_arm(self):
         """ Test getting replacement options for arm track """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '45', 'a', True, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '45', 'a', True, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '10')
         old_track = setlist[9]
@@ -246,7 +246,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_get_replacement_options_no_level(self):
         """ Test getting replacement options for track with no level """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '1')
         old_track = setlist[0]
@@ -259,8 +259,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
     ### REPLACE TRACK ###
     def test_replace_track(self):
         """ Test replace_track """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', False, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '30', 'a', False, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
 
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '2')
@@ -284,8 +284,8 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_replace_arm_track(self):
         """ Test replace arm track """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '45', 'a', True, self.template_loc, self.pound_track_list_loc)
-        # pound_setlist_builder._parse_pound_setlist_template(self.template_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '45', 'a', True, self.template_name, self.track_list_name)
+        # pound_setlist_builder._parse_pound_setlist_template(self.template_name)
         setlist = pound_setlist_builder.build_setlist()
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '10')
         old_track = setlist[9]
@@ -315,7 +315,7 @@ class TestPoundSetlistBuilder(unittest.TestCase):
 
     def test_replace_track_no_level(self):
         """ Test replace_track no level """
-        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_loc, self.pound_track_list_loc)
+        pound_setlist_builder = PoundSetlistBuilder('beginner', '15', 'a', False, self.template_name, self.track_list_name)
         setlist = pound_setlist_builder.build_setlist()
         track_options = pound_setlist_builder.get_replacement_track_options(setlist, '1')
         old_track = setlist[0]

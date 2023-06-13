@@ -3,9 +3,7 @@ from src.pom_setlist_builder import PomSetlistBuilder
 
 class TestPoundSetlistBuilder(unittest.TestCase):
     """ Tests PoundSetlistBuilder Class """
-
-    # template_loc = 'C:\\Users\Sierra\\Projects\\pom-setlist-generator\src\json\pom_setlist_template.json'
-    # pound_track_list_loc = 'C:\\Users\Sierra\\Projects\\pom-setlist-generator\src\json\\pom_track_list.json'
+    
     template_name = 'pom_setlist_template.json'
     track_list_name = 'pom_track_list.json'
 
