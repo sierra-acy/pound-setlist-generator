@@ -1,24 +1,21 @@
-import argparse
-from main_pound import main_pound
-from main_pom import main_pom
+from flask import Flask
 
-def main():
-    """ main runner """
+app = Flask(__name__)
 
-    args = get_args()
-    class_format = args['format']
-    if(class_format == 'pound'):
-        main_pound()
-    elif(class_format == 'pom'):
-        main_pom()
-    else:
-        print(f'{class_format} is not a valid format option. Please use \'pound\' or \'pom\'.')
+@app.route("/")
+def index():
+    """ index """
+    return "Congratulations, it's a web app!"
 
-def get_args():
-    """ Setup argument parser """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-format', required=True, help='class format', choices=['pound', 'pom'])
-    return vars(parser.parse_args())
+@app.route("/<pound>")
+def main_pound():
+    """ runner for POUND workflow """
+    return "Pound"
+
+@app.route("/<pomsquad>")
+def main_pom():
+    """ runner for PomSquad workflow """
+    return "PomSquad"
 
 if __name__ == "__main__":
-    main()
+    app.run(host="127.0.0.1", port=8080, debug=True)
