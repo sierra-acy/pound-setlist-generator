@@ -102,6 +102,11 @@
                 "name":"Thks fr th Mmrs",
                 "artist":"Fall Out Boy",
                 "canBeArmTrack":false
+            },
+            {
+                "name":"Good Girls",
+                "artist":"Elle King",
+                "canBeArmTrack":false
             }
         ]
     },
