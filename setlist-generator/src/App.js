@@ -1,248 +1,262 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
 
 
 function RadioOption({ id, name, value, label }) {
   return (
     <div>
-      <input type="radio" id={id} name={name} value={value}/>
-      <label for={id}>{label}</label><br/>
+      <input type="radio" key={id} id={id} name={name} value={value}/>
+      <label htmlFor={id}>{label}</label>
     </div>
   );
 }
 
 function RadioGroup({ radioGroupLabel, optionsList }) {
-  const options = []
+  let options = optionsList.map(option => <RadioOption key={option} id={option} name={radioGroupLabel} value={option} label={option} />)
   
-  for(i in optionsList) {
-    const id = optionsList[i] + i;
-    
-    options.push(
-      <RadioOption id={id} name={id} value={optionsList[i]} label={optionsList[i]} />
-    );
-  }
-
   return (
     <div>
-      <p>{radioGroupLabel}:</p><br/>
+      <p>{radioGroupLabel}:</p>
       {options}
     </div>
   );
 }
 
-function CheckboxOption({ checkboxLabel }) {
+function CheckboxOption({ label, name, value }) {
   return(
     <div>
-      <input type="checkbox" id={checkboxLabel} name={checkboxLabel} value={checkboxLabel}/>
-      <label for={checkboxLabel}>{checkboxLabel}</label>
+      <input type="checkbox" id={name} name={name} value={value} />
+      <label htmlFor={name}>{label}</label>
     </div>
   );
 }
 
-function PoundTrack({ name, artist, type, level }) {
-  const withLevel = <p>{type} Level {level}: {name} by {artist}</p>
-  const noLevel = <p>{type}: {name} by {artist}</p>
-  const trackHtml = level !== null ? withLevel : noLevel;
-
+function Track({ name, artist, type, level }) {
   return(
-    trackHtml
+    <>{type ? type : ""} {level ? level : ""} { type || level ? ":" : ""} {name} by {artist}</>
   );
 }
 
-function PomTrack({ name, artist, type }) {
-  const withType = <p>{type}: {name} by {artist}</p>
-  const noType = <p>{name} by {artist}</p>
-  const trackHtml = type !== null ? withType : noType;
+function Settings( { classType, settingsData, setSetlistData }) {
+  // const TEMP_SETTINGS_DATA_POUND = [
+  //   {label:"Class Difficulty", type:"radio", options:["Beginner", "Intermediate", "Advanced"]},
+  //   {label: "Class Length", type:"radio", options:["15", "30", "45"]},
+  //   {label: "Setlist Version", type:"radio", options:["A", "B"]},
+  //   {label: "Include Arm Track", type:"checkbox", name:"includeArmTrack"}
+  // ]
 
-  return(
-    trackHtml
-  );
-}
+  // const TEMP_SETTINGS_DATA_POM = [
+  //   {label:"Class Length", type:"radio", options:["15", "30", "50"]}
+  // ]
 
-function PomSettingsForm({ onClassLengthChange }) {
-  const classLengthList = ["20", "30", "50"];
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    let generatedData;
+    if(classType === "pound") {
+      // generate pound setlist
+      generatedData = DUMMY_SETLIST_DATA_POUND;
+    } else if(classType === "pom") {
+      // generate pom setlist
+      generatedData = DUMMY_SETLIST_DATA_POM;
+    } else {
+      generatedData = "";
+    }
+    console.log("setting setlistdata in Settings");
+    setSetlistData(generatedData);
+  }
+
+  let settings = settingsData.map(setting => {
+    if(setting.type === "radio") {
+      return <RadioGroup key={setting.label} radioGroupLabel={setting.label} optionsList={setting.options} />
+    } else if (setting.type === "checkbox") {
+      return <CheckboxOption key={setting.label} label={setting.label} name={setting.name} value={false}/>
+    } else {
+      return <></>
+    }});
 
   return(
     <div>
-      <form>
-        <RadioGroup radioGroupLabel="Class Length" optionsList={classLengthList}/>
-        <button type="submit" value="Generate"/>
+      <h2>Settings</h2>
+      <form onSubmit={handleSubmit}>
+        {settings}
+        <button type="submit" value="Generate">Generate</button>
       </form>
     </div>
   );
 }
 
-function PomSetlist({ setlistData, classLength }) {
-  let setlist = [];
-  setlistData.forEach((trackData) => {
-    let type = trackData.contains('type') ? trackData.type : null;
-    setlist.push(
-      <li><PomTrack name={trackData.name} artist={trackData.artist} type={type}/></li>
+function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToReplace }) {
+  function handleReplace(trackData) {
+    setTrackToReplace(trackData);
+    // generate list of replacements using track data
+    console.log("setting replacementoptions and isreplace in Setlist");
+    setReplacementOptions(DUMMYREPLACEMENTOPTIONS);
+    setIsReplace(true);
+  }
+
+    return (
+      <div>
+        <h2>Setlist</h2>
+        <ol>
+          {setlistData.map(trackData => {
+            let level = "level" in trackData ? trackData.level : false;
+            let type = "type" in trackData ? trackData.type : false;
+            return <li key={trackData.id}><Track name={trackData.name} artist={trackData.artist} type={type} level={level}/><button type="button" onClick={() => handleReplace(trackData)}>Replace</button></li>
+          })}
+        </ol>
+      </div>
     );
-  });
+  }
 
-  return (
-    <div>
-      <ol>
-        { setlist }
-      </ol>
-    </div>
-  );
-}
+function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setSetlistData, setIsReplace }) {
 
-function PoundSettingsForm( { onDifficultyChange, onClassLengthChange, onSetlistVersionChange, onIncludeArmTrackChange }) {
-  const difficultyList = ["Beginner", "Advanced"];
-  const classLengthList = ["15 min", "30 min", "45 min"];
-  const setlistVersionList = ["A (default)", "B"];
+  function handleSubmit(e) {
+    e.preventDefault();
+    // newTrackId = e.target.id
+    // find index of trackToReplace in setlist data
+    // map( track => { if track.id === trackToReplace.id{ return getTrack(newTrackId)}} )???
+    const DUMMY_REPLACED_SETLIST_DATA_POUND = [
+      {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
+      {"id":2, "type":"set", "level":"1", "name":"songname2", "artist":"artist2"}
+    ]
+    setSetlistData(DUMMY_REPLACED_SETLIST_DATA_POUND);
+    setIsReplace(false);
+  }
+
+  let prompt = "Which ";
+  if("type" in trackToReplace) {
+    prompt = prompt.concat(trackToReplace.type + " ");
+  }
+  if("level" in trackToReplace) {
+    prompt = prompt.concat("Level " + trackToReplace.level + " ")
+  }
+  prompt = prompt.concat("would you like to replace " + trackToReplace.name + " by " + trackToReplace.artist + " with?");
 
   return(
     <div>
-      <form>
-        <RadioGroup radioGroupLabel="Class Difficulty" optionList={difficultyList}/><br/>
-        <RadioGroup radioGroupLabel="Class Length" optionList={classLengthList}/><br/>
-        <RadioGroup radioGroupLabel="Setlist Version" optionList={setlistVersionList}/><br/>
-        <CheckboxOption checkboxLabel="Include Arm Track"/>
-        <button type="submit" value="Generate"/>
+      <form onSubmit={handleSubmit}>
+        <h3>{prompt}</h3>
+        {replacementOptions.map(track => {
+            let value = (track.name + track.artist).toLowerCase().replaceAll(" ", "");
+            return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={value} label={track.name + " by " + track.artist} />
+          })
+        }
+        <button type="submit" value="Replace">Replace</button>
       </form>
     </div>
   );
 }
 
-function PoundSetlist({ setlistData, difficulty, classLength, setlistVersion, includeArmTrack }) {
-  let setlist = [];
-  setlistData.forEach((trackData) => {
-    let level = trackData.contains('level') ? trackData.level : null;
-    setlist.push(
-      <li><span><PoundTrack name={trackData.name} artist={trackData.artist} type={trackData.type} level={level}/></span><span><button type="button">Replace</button></span></li>
-    );
-  });
+function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace }) {
+  // const [difficulty, setDifficulty] = useState("");
+  // const [classLength, setClassLength] = useState("");
+  // const [setlistVersion, setSetlistVersion] = useState("");
+  // const [includeArmTrack, setIncludeArmTrack] = useState(false);
 
-  return (
-    <div>
-      <ol>
-        { setlist }
-      </ol>
-    </div>
-  );
-}
-
-function PomReplace({ setlistData, oldTrack, replacementOptions, onReplacementTrackChange, onSetlistChange }) {
-  let replacementRadioOptions = [];
-
-  for(i in replacementOptions) {
-    id = "track" + i;
-    value = replacementOptions[i];
-    label = replacementOptions[i].name + " by " + replacementOptions[i].artist;
-    replacementRadioOptions.push(<p><RadioOption id={id} name={id} value={value} label={value}/></p>);
+  let settingsData = [];
+  if(classType === "pound") {
+    settingsData = TEMP_SETTINGS_DATA_POUND;
+  } else if(classType === "pom") {
+    settingsData = TEMP_SETTINGS_DATA_POM;
   }
 
   return(
-    <div>
-      <form>
-        <h3>Which song would you like to replace {oldTrack.name} by {oldTrack.artist} with?</h3>
-        {replacementRadioOptions}
-        <button type="submit" value="Replace"/>
-      </form>
+    <div> 
+      <div className="generator">
+        <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace}/>
+        <Settings classType={classType} settingsData={settingsData} setSetlistData={setSetlistData}/>
+      </div>
     </div>
   );
 }
 
-function PoundReplace({ setlistData, oldTrack, replacementOptions, onReplacementTrackChange, onSetlistChange }) {
-  let replacementRadioOptions = [];
-
-  for(i in replacementOptions) {
-    id = "track" + i;
-    value = replacementOptions[i];
-    label = replacementOptions[i].name + " by " + replacementOptions[i].artist;
-    replacementRadioOptions.push(<p><RadioOption id={id} name={id} value={value} label={value}/></p>);
-  }
-
+function ClassSelector({ handleChooseClass }) {
   return(
     <div>
-      <form>
-        <h3>Which {oldTrack.type} Level {oldTrack.level} would you like to replace {oldTrack.name} by {oldTrack.artist} with?</h3>
-        {replacementRadioOptions}
-        <button type="submit" value="Replace"/>
-      </form>
+      <button type="button" onClick={handleChooseClass} value="pound">POUND</button>
+      <button type="button" onClick={handleChooseClass} value="pom">PomSquad</button>
     </div>
   );
 }
 
-function PomSetlistGeneratorSection({ setlistData }) {
-  const [classLength, setClassLength] = useState("");
+function MainContentSection({ classType }){
+  // visual states:
+  // 1. Setlist Generator Section
+  // 2. Replace
 
-  return(
-    <div>
-      <span><h2>Setlist</h2></span><span><h2>Settings</h2></span><br/>
-      <span><PomSetlist setlsitData={setlistData} classLength={classLength}/></span>
-      <span><PomSettingsForm onClassLengthChange={setClassLength}/></span>
-    </div>
-  );
-}
-
-function PoundSetlistGeneratorSection({ setlistData }) {
-  const [difficulty, setDifficulty] = useState("");
-  const [classLength, setClassLength] = useState("");
-  const [setlistVersion, setSetlistVersion] = useState("A");
-  const [includeArmTrack, setIncludeArmTrack] = useState(true);
-
-  return(
-    <div>
-      <span><h2>Setlist</h2></span><span><h2>Settings</h2></span><br/>
-      <span><PoundSetlist setlistData={setlistData} difficulty={difficulty} classLength={classLength} setlistVersion={setlistVersion} includeArmTrack={includeArmTrack}/></span>
-      <span><PoundSettingsForm onDifficultyChange={setDifficulty} onClassLengthChange={setClassLength} onSetlistVersionChange={setSetlistVersion} onIncludeArmTrackChange={setIncludeArmTrack}/></span>
-    </div>
-  );
-}
-
-function ReplaceAlert() {
-  return(
-    <div>
-      <h3>Replace manually or automatically?</h3><br/>
-      <span><button type="button">Manual</button></span><span><button type="button">Automatic</button></span>
-    </div>
-  );
-}
-
-function ClassSelector() {
-  return(
-    <div>
-      <span><button type="button">POUND</button></span><span><button type="button">PomSquad</button></span>
-    </div>
-  );
-}
-
-function MainContentSection({ replacementOptions }){
+  const [isReplace, setIsReplace] = useState(false);
   const [setlistData, setSetlistData] = useState([]);
-  const [replacementTrackData, setReplacementTrackData] = useState({});
+  const [replacementOptions, setReplacementOptions] = useState([]);
+  const [trackToReplace, setTrackToReplace] = useState({});
   
-  return(
-    <div>
-        <PoundSetlistGeneratorSection setlistData={setlistData}/>
-        <PomSetlistGeneratorSection setlistData={setlistData}/>
-        <PoundReplace setlistData={setlistData} oldTrack={track} replacementOptions={replacementOptions} onReplacementTrackChange={setReplacementTrackData} onSetlistChange={setSetlistData}/>
-        <PomReplace setlistData={setlistData} oldTrack={track} replacementOptions={replacementOptions} onReplacementTrackChange={setReplacementTrackData} onSetlistChange={setSetlistData}/>
-    </div>
-  );
+    let section = <></>
+    if(isReplace) {
+      section = <ReplaceSection setlistData={setlistData} replacementOptions={replacementOptions} onSetlistChange={setSetlistData} setIsReplace={setIsReplace} trackToReplace={trackToReplace} setSetlistData={setSetlistData}/>;
+    } else if(classType.length !== 0) {
+      section = <SetlistGeneratorSection classType={classType} setlistData={setlistData} setSetlistData={setSetlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace}/>  
+    }
+
+    return section;
 }
 
 function App() {
+  const [classType, setClassType] = useState(""); //pound or pom
+
+  function handleChooseClass(e) {
+    console.log("setting classType in App");
+    let shouldContinue = false;
+    if(classType != "") {
+      shouldContinue = window.confirm("Are you sure you want to switch formats? All progress will be lost. Click \"OK\" to continue.");
+    } else {
+      shouldContinue = true;
+    }
+    
+    if(shouldContinue)  {
+      // clear data
+      // set class type to e.target.value
+      setClassType(e.target.value);
+    }
+    
+  }
+
   return (
+    <React.StrictMode>
     <div>
-      <header>
+      <header className="App-header">
         <h2>Setlist Generator</h2><br/>
-        <ClassSelector/>
+        <ClassSelector handleChooseClass={handleChooseClass}/>
       </header>
-      <body>
-        <MainContentSection replacementOptions={REPLACEMENTOPTIONS}/>
-      </body>
+      <MainContentSection key={classType} classType={classType}/>
     </div>
+    </React.StrictMode>
   );
 }
 
-const REPLACEMENTOPTIONS= [
-  {"name":"DummySong1", "artist":"DummyArtist1","Type":"DummyType1", "Level":"DummyLevel1"},
-  {"name":"DummySong2", "artist":"DummyArtist2","Type":"DummyType1", "Level":"DummyLevel1"}
+const DUMMYREPLACEMENTOPTIONS= [
+  {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
+  {"id":6, "name":"DummySong2", "artist":"DummyArtist2","type":"DummyType1", "level":"DummyLevel1"}
 ]
+
+const DUMMY_SETLIST_DATA_POUND = [
+  {"id":1, "type":"warmup", "name":"songname1", "artist":"artist1"},
+  {"id":2, "type":"set", "level":"1", "name":"songname2", "artist":"artist2"}
+]
+
+const DUMMY_SETLIST_DATA_POM = [
+  {"id":3, "type":"prancing", "name":"songname1", "artist":"artist1"},
+  {"id":4, "name":"songname2", "artist":"artist2"}
+]
+
+const TEMP_SETTINGS_DATA_POUND = [
+    {"label":"Class Difficulty", "type":"radio", "options":["Beginner", "Intermediate", "Advanced"]},
+    {"label":"Class Length", "type":"radio", "options":["15", "30", "45"]},
+    {"label":"Setlist Version", "type":"radio", "options":["A", "B"]},
+    {"label":"Include Arm Track", "type":"checkbox", "name":"includeArmTrack"}
+]
+
+const TEMP_SETTINGS_DATA_POM = [
+    {label:"Class Length", type:"radio", options:["15", "30", "50"]}
+  ]
 
 export default App;
