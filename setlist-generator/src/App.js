@@ -11,8 +11,8 @@ function RadioOption({ id, name, value, label }) {
   );
 }
 
-function RadioGroup({ radioGroupLabel, optionsList }) {
-  let options = optionsList.map(option => <RadioOption key={option} id={option} name={radioGroupLabel} value={option} label={option} />)
+function RadioGroup({ radioGroupLabel, name, optionsList }) {
+  let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} id={option.toLowerCase()} name={name} value={option.toLowerCase()} label={option} />)
   
   return (
     <div>
@@ -25,7 +25,7 @@ function RadioGroup({ radioGroupLabel, optionsList }) {
 function CheckboxOption({ label, name, value }) {
   return(
     <div>
-      <input type="checkbox" id={name} name={name} value={value} />
+      <input type="checkbox" id={name.toLowerCase()} name={name} value={value} />
       <label htmlFor={name}>{label}</label>
     </div>
   );
@@ -37,42 +37,53 @@ function Track({ name, artist, type, level }) {
   );
 }
 
-function Settings( { classType, settingsData, setSetlistData }) {
+function Settings( { classType, setSetlistData }) {
 
   function handleSubmit(e) {
     e.preventDefault();
 
+    let elements = e.target.elements
     let endpoint = '';
+    let queryParams = [];
     if(classType === "pound") {
       // generate pound setlist
-      endpoint = 'pound-setlist';
+      endpoint = '/pound-setlist';
+      queryParams.push('difficulty=' + elements['difficultySetting'].value);
+      queryParams.push('length=' + elements['lengthSetting'].value);
+      queryParams.push('version=' + elements['versionSetting'].value);
+      queryParams.push('includeArmTrack=' + elements['includeArmTrackSetting'].value);
     } else if(classType === "pom") {
       // generate pom setlist
-      endpoint = 'pom-setlist';
-  } else {
+      endpoint = '/pom-setlist';
+      queryParams.push('length=' + elements['lengthSetting'].value);
+    } else {
       console.log("classType not found");
     }
 
-    fetch('/' + endpoint).then(res => res.json()).then(data => {
-      console.log("setting setlistdata in Settings");
+    if(queryParams.length > 0) {
+      endpoint += '?' + queryParams.join('&');
+    }
+
+    fetch(endpoint).then(res => res.json()).then(data => {
       setSetlistData(data);
     });
   }
 
-  let settings = settingsData.map(setting => {
-    if(setting.type === "radio") {
-      return <RadioGroup key={setting.label} radioGroupLabel={setting.label} optionsList={setting.options} />
-    } else if (setting.type === "checkbox") {
-      return <CheckboxOption key={setting.label} label={setting.label} name={setting.name} value={false}/>
-    } else {
-      return <></>
-    }});
+  let settingsData = [];
+  if (classType === 'pound') {
+    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Intermediate","Advanced"]}/>,
+    <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]}/>,
+    <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]}/>,
+    <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" value={false}/>]
+  } else if (classType === 'pom') {
+    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","50"]}/>];
+  }
 
   return(
     <div>
       <h2>Settings</h2>
       <form onSubmit={handleSubmit}>
-        {settings}
+        {settingsData}
         <button type="submit" value="Generate">Generate</button>
       </form>
     </div>
@@ -93,10 +104,9 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
     }
 
     fetch(endpoint).then(res => res.json()).then(data => {
-      console.log("setting replacementoptions and isreplace in Setlist");
       setReplacementOptions(data);
       setIsReplace(true);
-    })
+    });
   }
 
     return (
@@ -140,7 +150,6 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
       setSetlistData(data);
       setIsReplace(false);
     });
-    
   }
 
   let prompt = "Which ";
@@ -168,23 +177,11 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
 }
 
 function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace }) {
-  // const [difficulty, setDifficulty] = useState("");
-  // const [classLength, setClassLength] = useState("");
-  // const [setlistVersion, setSetlistVersion] = useState("");
-  // const [includeArmTrack, setIncludeArmTrack] = useState(false);
-
-  let settingsData = [];
-  if(classType === "pound") {
-    settingsData = TEMP_SETTINGS_DATA_POUND;
-  } else if(classType === "pom") {
-    settingsData = TEMP_SETTINGS_DATA_POM;
-  }
-
   return(
     <div> 
       <div className="generator">
         <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType}/>
-        <Settings classType={classType} settingsData={settingsData} setSetlistData={setSetlistData}/>
+        <Settings classType={classType} setSetlistData={setSetlistData}/>
       </div>
     </div>
   );
@@ -251,21 +248,4 @@ function App() {
     </React.StrictMode>
   );
 }
-
-const DUMMYREPLACEMENTOPTIONS= [
-  {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
-  {"id":6, "name":"DummySong2", "artist":"DummyArtist2","type":"DummyType1", "level":"DummyLevel1"}
-]
-
-const TEMP_SETTINGS_DATA_POUND = [
-    {"label":"Class Difficulty", "type":"radio", "options":["Beginner", "Intermediate", "Advanced"]},
-    {"label":"Class Length", "type":"radio", "options":["15", "30", "45"]},
-    {"label":"Setlist Version", "type":"radio", "options":["A", "B"]},
-    {"label":"Include Arm Track", "type":"checkbox", "name":"includeArmTrack"}
-]
-
-const TEMP_SETTINGS_DATA_POM = [
-    {label:"Class Length", type:"radio", options:["15", "30", "50"]}
-  ]
-
 export default App;

@@ -1,0 +1,187 @@
+{
+    "warmup": [
+        {
+            "name":"Believer",
+            "artist":"Imagine Dragons",
+            "canBeArmTrack":false
+        },
+        {
+            "name":"Chains",
+            "artist":"Nick Jonas",
+            "canBeArmTrack":false
+        },
+        {
+            "name":"River",
+            "artist":"Bishop Briggs",
+            "canBeArmTrack":false
+        }
+    ],
+    "set": {
+        "1": [
+            {
+                "name":"Bang Bang",
+                "artist":"Jessie J",
+                "canBeArmTrack":true
+            },
+            {
+                "name":"That's My Girl",
+                "artist":"Fifth Harmony",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Bounce Back",
+                "artist":"Little Mix",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"All Shook Up",
+                "artist":"Whissell",
+                "canBeArmTrack":true
+            },
+            {
+                "name":"How You Like Me Now",
+                "artist":"The Heavy feat. The Dap-Kings Horns",
+                "canBeArmTrack":true
+            }
+        ],
+        "2": [
+            {
+                "name":"Coming Undone",
+                "artist":"Eric Zayne",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Hey Mama",
+                "artist":"David Guetta",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Go Crazy",
+                "artist":"Leslie Odom Jr",
+                "canBeArmTrack":false
+            }
+        ],
+        "3": [
+            {
+                "name":"Hit The Road Jack",
+                "artist":"Throttle",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"MIC Drop (Steve Aoki Remix)",
+                "artist":"BTS",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Kill This Love",
+                "artist":"BLAKPINK",
+                "canBeArmTrack":false
+            }
+        ]
+    },
+    "kit": {
+        "1": [
+            {
+                "name":"Crushcrushcrush",
+                "artist":"Paramore",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Come Out and Play",
+                "artist":"The Offspring",
+                "canBeArmTrack":false
+            }
+        ],
+        "2": [
+            {
+                "name":"Dragula",
+                "artist":"Rob Zombie",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Thks fr th Mmrs",
+                "artist":"Fall Out Boy",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Good Girls",
+                "artist":"Elle King",
+                "canBeArmTrack":false
+            }
+        ]
+    },
+    "lunge": {
+        "1": [
+            {
+                "name":"Emperor's New Clothes",
+                "artist":"Panic at the Disco",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"How I Want Ya (feat. Hailee Steinfeld)",
+                "artist":"Hudson Thames",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Teeth",
+                "artist":"5 Seconds of Summer",
+                "canBeArmTrack":false
+            }
+        ],
+        "2": [
+            {
+                "name":"My Songs Know What You Did in the Dark",
+                "artist":"Fall Out Boy",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Too Loud",
+                "artist":"Icon for Hire",
+                "canBeArmTrack":false
+            }
+        ]
+    },
+    "t&a": {
+        "1": [
+            {
+                "name":"Wicked Ones",
+                "artist":"Dorothy",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Don't Let Me Down",
+                "artist":"Chainsmokers",
+                "canBeArmTrack":false
+            }
+        ],
+        "2": [
+            {
+                "name":"Jimmy Shake",
+                "artist":"740 Boyz, Apashe & Dose",
+                "canBeArmTrack":false
+            },
+            {
+                "name":"Pray",
+                "artist":"Bebe Rexha",
+                "canBeArmTrack":false
+            }
+        ]
+    },
+    "cooldown": [
+        {
+            "name":"Thank U Next",
+            "artist":"Ariana Grande",
+            "canBeArmTrack":false
+        },
+        {
+            "name":"Feel It Still",
+            "artist":"Portugal. The Man (Lido Remix)",
+            "canBeArmTrack":false
+        },
+        {
+            "name":"This is Halloween (Trap City Remix)",
+            "artist":"Trap City",
+            "canBeArmTrack":false
+        }
+    ]
+}
