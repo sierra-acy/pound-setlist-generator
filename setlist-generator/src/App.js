@@ -71,7 +71,7 @@ function Settings( { classType, setSetlistData }) {
 
   let settingsData = [];
   if (classType === 'pound') {
-    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Intermediate","Advanced"]}/>,
+    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Advanced"]}/>,
     <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]}/>,
     <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]}/>,
     <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" value={false}/>]
