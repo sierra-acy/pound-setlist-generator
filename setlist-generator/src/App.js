@@ -113,7 +113,7 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
     let body = {};
     if(classType === "pound") {
       endpoint = '/pound-replacement-options'
-      body['setlistData'] = setlistData;
+      body['setlist'] = setlistData;
       body['trackNum']  = e.target.parentNode.id;
       body['includeArmTrack'] = chosenSettings['includeArmTrack'];
       body["difficulty"] = chosenSettings['difficulty'];
@@ -121,6 +121,8 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
       body["version"] = chosenSettings['version'];
     } else if(classType === "pom") {
       endpoint = '/pom-replacement-options'
+      body['setlist'] = setlistData;
+      body['trackNum']  = e.target.parentNode.id;
     } else {
       console.log("class type not found");
     }

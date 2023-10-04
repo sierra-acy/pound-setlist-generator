@@ -1,6 +1,6 @@
 from flask import Flask, request
 from pound import build_pound_setlist, get_pound_replacement_track_options
-from pom import build_setlist as build_pom_setlist
+from pom import build_pom_setlist, get_pom_replacement_track_options
 
 app = Flask(__name__)
 
@@ -36,13 +36,10 @@ def pom_setlist():
 def find_pound_replacement_options():
     """ Find list of matching replacements """
     body = request.json
-    return get_pound_replacement_track_options(body['setlistData'], body['trackNum'], body['includeArmTrack'], body['difficulty'], body['length'], body['version'])
+    return get_pound_replacement_track_options(body['setlist'], body['trackNum'], body['includeArmTrack'], body['difficulty'], body['length'], body['version'])
 
-@app.route('/pom-replacement-options')
+@app.route('/pom-replacement-options', methods=['POST'])
 def find_pom_replacement_options():
     """ Find list of matching replacements """
-    DUMMYREPLACEMENTOPTIONS= [
-        {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
-        {"id":6, "name":"DummySong2", "artist":"DummyArtist2","type":"DummyType1", "level":"DummyLevel1"}
-    ]
-    return DUMMYREPLACEMENTOPTIONS
+    body = request.json
+    return get_pom_replacement_track_options(body['setlist'], body['trackNum'])
