@@ -4,13 +4,10 @@ from exceptions import TrackAvailabilityError
 
 POUND_TEMPLATE_LOCATION = '../json/pound_setlist_template.json'
 POUND_TRACK_LIST_LOCATION = '../json/pound_track_list.json'
-pom_template_location = '../json/pom_setlist_template.json'
-pom_track_list_location = '../json/pom_track_list.json'
 
 def build_setlist(difficulty, length, version, include_arm_track):
     """ Creates setlist for current template and vars """
     template = _parse_pound_setlist_template(difficulty, length, version)
-    
     setlist = []
     for slot in template:
         setlist_track = _build_new_track(setlist, slot, include_arm_track)

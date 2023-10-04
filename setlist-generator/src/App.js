@@ -76,7 +76,7 @@ function Settings( { classType, setSetlistData }) {
     <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]}/>,
     <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" value={false}/>]
   } else if (classType === 'pom') {
-    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","50"]}/>];
+    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["20","30","50"]}/>];
   }
 
   return(

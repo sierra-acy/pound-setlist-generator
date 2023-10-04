@@ -1,5 +1,6 @@
 from flask import Flask, request
-from pound import build_setlist
+from pound import build_setlist as build_pound_setlist
+from pom import build_setlist as build_pom_setlist
 
 app = Flask(__name__)
 
@@ -8,7 +9,7 @@ def pound_setlist():
     """ Generate or Update POUND setlsit """
     if(request.method == 'GET'):
         args = request.args
-        return build_setlist(args.get('difficulty'), args.get('length'), args.get('version'), args.get('include_arm_track'))
+        return build_pound_setlist(args.get('difficulty'), args.get('length'), args.get('version'), args.get('include_arm_track'))
 
     if(request.method == 'PUT'):
         DUMMY_REPLACED_SETLIST_DATA_POUND = [
@@ -21,18 +22,15 @@ def pound_setlist():
 def pom_setlist():
     """ Generate PomSquad Setlist """
     if(request.method == 'GET'):
-        DUMMY_SETLIST_DATA_POM = [
-        {"id":3, "type":"prancing", "name":"songname1", "artist":"artist1"},
-        {"id":4, "name":"songname2", "artist":"artist2"}
-        ]
-        return DUMMY_SETLIST_DATA_POM
-    elif(request.method == 'PUT'):
+        args = request.args
+        return build_pom_setlist(args.get('length'))
+
+    if(request.method == 'PUT'):
         DUMMY_REPLACED_SETLIST_DATA_POUND = [
             {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
             {"id":2, "type":"set", "level":"1", "name":"songname2", "artist":"artist2"}
         ]
         return DUMMY_REPLACED_SETLIST_DATA_POUND
-    
 
 @app.route('/pound-replacement-options')
 def find_pound_replacement_options():
