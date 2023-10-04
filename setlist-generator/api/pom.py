@@ -31,10 +31,11 @@ def _build_new_track(setlist, track_template):
     track_type = track_template['type']
     track_options = _parse_pom_track_list(track_type)
 
-    track_options = list(filter(lambda track, track_type=track_type: {"name":track['name'], "artist":track['artist'], "type":track_type} not in setlist, track_options))
+    ids_in_setlist = list(map(lambda track: track['id'], setlist))
+    track_options = list(filter(lambda track: track['id'] not in ids_in_setlist, track_options))
 
     if len(track_options) == 0:
-            raise TrackAvailabilityError(f'No tracks available of type {track_type} for slot {track_template}."')
+        raise TrackAvailabilityError(f'No tracks available of type {track_type} for slot {track_template}."')
 
     chosen_track = track_options[random.randrange(0, len(track_options))]
     
@@ -42,6 +43,7 @@ def _build_new_track(setlist, track_template):
     new_track['type'] = track_type
     new_track['name'] = chosen_track['name']
     new_track['artist'] = chosen_track['artist']
+    new_track['id'] = chosen_track['id']
 
     return new_track
 

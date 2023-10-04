@@ -109,19 +109,19 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
     });
   }
 
-    return (
-      <div>
-        <h2>Setlist</h2>
-        <ol>
-          {setlistData.map(trackData => {
-            let level = "level" in trackData ? trackData.level : false;
-            let type = "type" in trackData ? trackData.type : false;
-            return <li key={trackData.id}><Track name={trackData.name} artist={trackData.artist} type={type} level={level}/><button type="button" onClick={() => handleReplace(trackData)}>Replace</button></li>
-          })}
-        </ol>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h2>Setlist</h2>
+      <ol>
+        {setlistData.map(trackData => {
+          let level = "level" in trackData ? trackData.level : false;
+          let type = "type" in trackData ? trackData.type : false;
+          return <li key={'li'+trackData.id}><Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} /><button type="button" onClick={() => handleReplace(trackData)}>Replace</button></li>
+        })}
+      </ol>
+    </div>
+  );
+}
 
 function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setSetlistData, setIsReplace, classType }) {
 
