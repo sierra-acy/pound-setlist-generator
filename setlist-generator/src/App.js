@@ -37,7 +37,7 @@ function Track({ name, artist, type, level }) {
   );
 }
 
-function Settings( { classType, setSetlistData }) {
+function Settings( { classType, setSetlistData, setChosenSettings }) {
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -45,17 +45,31 @@ function Settings( { classType, setSetlistData }) {
     let elements = e.target.elements
     let endpoint = '';
     let queryParams = [];
+    let currChosenSettings = {};
     if(classType === "pound") {
       // generate pound setlist
+      currChosenSettings = {
+        "difficulty":elements['difficultySetting'].value,
+        "length":elements['lengthSetting'].value,
+        "version":elements['versionSetting'].value,
+        "includeArmTrack":elements['includeArmTrackSetting'].value
+      };
+      setChosenSettings(currChosenSettings);
+
       endpoint = '/pound-setlist';
-      queryParams.push('difficulty=' + elements['difficultySetting'].value);
-      queryParams.push('length=' + elements['lengthSetting'].value);
-      queryParams.push('version=' + elements['versionSetting'].value);
-      queryParams.push('includeArmTrack=' + elements['includeArmTrackSetting'].value);
+      queryParams.push('difficulty=' + currChosenSettings['difficulty']);
+      queryParams.push('length=' + currChosenSettings['length']);
+      queryParams.push('version=' + currChosenSettings['version']);
+      queryParams.push('includeArmTrack=' + currChosenSettings['includeArmTrack']);
     } else if(classType === "pom") {
       // generate pom setlist
+      currChosenSettings = {
+        "length":elements['lengthSetting'].value
+      };
+      setChosenSettings(currChosenSettings);
+
       endpoint = '/pom-setlist';
-      queryParams.push('length=' + elements['lengthSetting'].value);
+      queryParams.push('length=' + currChosenSettings['length']);
     } else {
       console.log("classType not found");
     }
@@ -90,25 +104,41 @@ function Settings( { classType, setSetlistData }) {
   );
 }
 
-function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToReplace, classType }) {
-  function handleReplace(trackData) {
+function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToReplace, classType, chosenSettings }) {
+  function handleReplace(trackData, e) {
     setTrackToReplace(trackData);
+
     // generate list of replacements using track data
     let endpoint = '';
+    let body = {};
     if(classType === "pound") {
       endpoint = '/pound-replacement-options'
+      body['setlistData'] = setlistData;
+      body['trackNum']  = e.target.parentNode.id;
+      body['includeArmTrack'] = chosenSettings['includeArmTrack'];
+      body["difficulty"] = chosenSettings['difficulty'];
+      body["length"] = chosenSettings['length'];
+      body["version"] = chosenSettings['version'];
     } else if(classType === "pom") {
       endpoint = '/pom-replacement-options'
     } else {
       console.log("class type not found");
     }
 
-    fetch(endpoint).then(res => res.json()).then(data => {
+    // POST request to be able to send json body
+    const request = new Request(endpoint, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: new Headers({'content-type': 'application/json'}),
+    });
+
+    fetch(request).then(res => res.json()).then(data => {
       setReplacementOptions(data);
       setIsReplace(true);
     });
   }
 
+  let id = 1;
   return (
     <div>
       <h2>Setlist</h2>
@@ -116,7 +146,7 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
         {setlistData.map(trackData => {
           let level = "level" in trackData ? trackData.level : false;
           let type = "type" in trackData ? trackData.type : false;
-          return <li key={'li'+trackData.id}><Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} /><button type="button" onClick={() => handleReplace(trackData)}>Replace</button></li>
+          return <li id={id++} key={'li'+trackData.id}><Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} /><button type="button" onClick={(e) => handleReplace(trackData, e)}>Replace</button></li>
         })}
       </ol>
     </div>
@@ -176,12 +206,12 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
   );
 }
 
-function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace }) {
+function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace, chosenSettings, setChosenSettings }) {
   return(
     <div> 
       <div className="generator">
-        <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType}/>
-        <Settings classType={classType} setSetlistData={setSetlistData}/>
+        <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType} chosenSettings={chosenSettings}/>
+        <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings}/>
       </div>
     </div>
   );
@@ -205,12 +235,13 @@ function MainContentSection({ classType }){
   const [setlistData, setSetlistData] = useState([]);
   const [replacementOptions, setReplacementOptions] = useState([]);
   const [trackToReplace, setTrackToReplace] = useState({});
+  const [chosenSettings, setChosenSettings] = useState({});
   
     let section = <></>
     if(isReplace) {
       section = <ReplaceSection setlistData={setlistData} replacementOptions={replacementOptions} onSetlistChange={setSetlistData} setIsReplace={setIsReplace} trackToReplace={trackToReplace} setSetlistData={setSetlistData} classType={classType}/>;
     } else if(classType.length !== 0) {
-      section = <SetlistGeneratorSection classType={classType} setlistData={setlistData} setSetlistData={setSetlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace}/>  
+      section = <SetlistGeneratorSection classType={classType} setlistData={setlistData} setSetlistData={setSetlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} chosenSettings={chosenSettings} setChosenSettings={setChosenSettings}/>
     }
 
     return section;

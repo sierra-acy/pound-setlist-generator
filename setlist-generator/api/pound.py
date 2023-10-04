@@ -5,7 +5,7 @@ from exceptions import TrackAvailabilityError
 POUND_TEMPLATE_LOCATION = '../json/pound_setlist_template.json'
 POUND_TRACK_LIST_LOCATION = '../json/pound_track_list.json'
 
-def build_setlist(difficulty, length, version, include_arm_track):
+def build_pound_setlist(difficulty, length, version, include_arm_track):
     """ Creates setlist for current template and vars """
     template = _parse_pound_setlist_template(difficulty, length, version)
     setlist = []
@@ -36,8 +36,7 @@ def _build_new_track(setlist, track_template, include_arm_track):
         track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
         is_arm_track = True
 
-    ids_in_setlist = list(map(lambda track: track['id'], setlist))
-    track_options = list(filter(lambda track: track['id'] not in ids_in_setlist, track_options))
+    track_options = _filter_duplicates(setlist, track_options)
     
     if len(track_options) == 0:
         raise TrackAvailabilityError(f'No track available of type {track_type} with level {track_level} for slot {track_template}."')
@@ -72,3 +71,28 @@ def _parse_pound_track_list(track_type, track_level):
         except KeyError as exc:
             raise TrackAvailabilityError(f'No track of type {track_type} with level {track_level} available in list of known songs. Please choose a different setlist or update the song list.') from exc
     return pound_track_list
+
+def get_pound_replacement_track_options(setlist, track_num, include_arm_track, difficulty, length, version):
+    """ Gets list of tracks with same params as given track_num """
+
+    # get old track details
+    track_index = int(track_num) - 1
+    old_track = setlist[track_index]
+    track_type = old_track['type']
+    track_level = old_track['level']
+
+    # get user choice
+    track_options = _parse_pound_track_list(track_type, track_level)
+    template = _parse_pound_setlist_template(difficulty, length, version)
+    if 'canBeArmTrack' in template[track_index] and include_arm_track:
+        track_options = list(filter(lambda track: track['canBeArmTrack'] is True, track_options))
+
+    # filter duplicates
+    track_options = _filter_duplicates(setlist, track_options)
+
+    return track_options
+
+def _filter_duplicates(setlist, options):
+    """ Filters duplicate songs out of list based on id """
+    ids_in_setlist = list(map(lambda track: track['id'], setlist))
+    return list(filter(lambda track: track['id'] not in ids_in_setlist, options))
