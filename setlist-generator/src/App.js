@@ -279,7 +279,7 @@ function App() {
     <React.StrictMode>
     <div>
       <header className="App-header">
-        <h2>Setlist Generator</h2><br/>
+        <h2 onClick={() => setClassType("")}>Setlist Generator</h2><br/>
         <ClassSelector handleChooseClass={handleChooseClass}/>
       </header>
       <MainContentSection key={classType} classType={classType}/>
