@@ -135,8 +135,14 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
     });
 
     fetch(request).then(res => res.json()).then(data => {
-      setReplacementOptions(data);
-      setIsReplace(true);
+      if(data.length === 0) {
+        let innerHTML = e.target.parentNode.innerHTML;
+        let text = innerHTML.substring(0, innerHTML.indexOf("<"));
+        alert("There are no valid replacement options for " + text + ".");
+      } else {
+        setReplacementOptions(data);
+        setIsReplace(true);
+      }
     });
   }
 
