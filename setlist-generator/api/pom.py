@@ -1,6 +1,6 @@
 import json
 import random
-from exceptions import TrackNotFoundError
+from exceptions import TrackNotFoundError, DuplicateIDError
 
 POM_TEMPLATE_LOCATION = '../json/pom_setlist_template.json'
 POM_TRACK_LIST_LOCATION = '../json/pom_track_list.json'
@@ -74,3 +74,41 @@ def get_pom_replacement_track_options(setlist, track_num):
     track_options = list(filter(lambda track: track['id'] not in ids_in_setlist, track_options))
 
     return track_options
+
+def replace_pom_track(setlist, replace_track_num, new_track_id):
+    """ Replaces given track with given new track in setlist """
+
+    # get new track based on id
+    new_track = _find_track_by_id(new_track_id)
+
+    track_index = int(replace_track_num) - 1
+    old_track = setlist[track_index]
+    track_type = old_track['type']
+
+    insert = {}
+    insert['type'] = track_type
+    insert['name'] = new_track['name']
+    insert['artist'] = new_track['artist']
+    insert['id'] = new_track['id']
+
+    setlist[track_index] = insert
+    return setlist
+
+def _find_track_by_id(track_id):
+    """ Transforms track with given id from JSON file text to JSON object """
+    with open(POM_TRACK_LIST_LOCATION, 'r', encoding='UTF-8') as pom_track_list_file:
+        data = pom_track_list_file.read()
+    pom_track_list_file.close()
+
+    data_json = json.loads(data)
+    track = []
+    for type_entry in data_json:
+        # curr_data = data_json[type_entry]
+        track = list(filter(lambda t: t['id'] == int(track_id), data_json[type_entry]))
+        if len(track) > 1:
+            raise DuplicateIDError('There is more than one track with the ID ' + track_id + ' found in the POUND track list.')
+        if len(track) == 1:
+            return track[0]
+    if len(track) == 0:
+        raise TrackNotFoundError('There is no track with ID ' + track_id + ' found in the POUND track list.')
+    return track[0]

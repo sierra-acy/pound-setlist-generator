@@ -97,7 +97,7 @@ def _filter_duplicates(setlist, options):
     ids_in_setlist = list(map(lambda track: track['id'], setlist))
     return list(filter(lambda track: track['id'] not in ids_in_setlist, options))
 
-def replace_track(setlist, replace_track_num, new_track_id):
+def replace_pound_track(setlist, replace_track_num, new_track_id):
     """ Replaces given track with given new track in setlist """
     
     # get new track based on id
