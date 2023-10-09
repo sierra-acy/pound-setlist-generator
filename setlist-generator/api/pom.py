@@ -1,6 +1,6 @@
 import json
 import random
-from exceptions import TrackAvailabilityError
+from exceptions import TrackNotFoundError
 
 POM_TEMPLATE_LOCATION = '../json/pom_setlist_template.json'
 POM_TRACK_LIST_LOCATION = '../json/pom_track_list.json'
@@ -35,7 +35,7 @@ def _build_new_track(setlist, track_template):
     track_options = list(filter(lambda track: track['id'] not in ids_in_setlist, track_options))
 
     if len(track_options) == 0:
-        raise TrackAvailabilityError(f'No tracks available of type {track_type} for slot {track_template}."')
+        raise TrackNotFoundError(f'No tracks available of type {track_type} for slot {track_template}."')
 
     chosen_track = track_options[random.randrange(0, len(track_options))]
     
@@ -56,7 +56,7 @@ def _parse_pom_track_list(track_type):
     try:
         pom_track_list = data_json[str(track_type)]
     except KeyError as exc:
-        raise TrackAvailabilityError(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.') from exc
+        raise TrackNotFoundError(f'No track of type {track_type} available in list of known songs. Please choose a different setlist or update the song list.') from exc
     return pom_track_list
 
 def get_pom_replacement_track_options(setlist, track_num):

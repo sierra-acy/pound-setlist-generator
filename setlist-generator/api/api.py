@@ -1,5 +1,5 @@
 from flask import Flask, request
-from pound import build_pound_setlist, get_pound_replacement_track_options
+from pound import build_pound_setlist, get_pound_replacement_track_options, replace_track
 from pom import build_pom_setlist, get_pom_replacement_track_options
 
 app = Flask(__name__)
@@ -12,11 +12,8 @@ def pound_setlist():
         return build_pound_setlist(args.get('difficulty'), args.get('length'), args.get('version'), args.get('include_arm_track'))
 
     if(request.method == 'PUT'):
-        DUMMY_REPLACED_SETLIST_DATA_POUND = [
-            {"id":5, "name":"DummySong1", "artist":"DummyArtist1","type":"DummyType1", "level":"DummyLevel1"},
-            {"id":2, "type":"set", "level":"1", "name":"songname2", "artist":"artist2"}
-        ]
-        return DUMMY_REPLACED_SETLIST_DATA_POUND
+        body = request.json
+        return replace_track(body['setlist'], body['trackNum'], body['newTrackId'])
 
 @app.route('/pom-setlist', methods=['GET','PUT'])
 def pom_setlist():

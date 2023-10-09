@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 
-
+// TODO: when returning from replacement page, repopulate settings with chosen settings
+// TODO: Add "none" level to pound track list and update api for this change
 function RadioOption({ id, name, value, label }) {
   return (
     <div>
@@ -106,15 +107,14 @@ function Settings( { classType, setSetlistData, setChosenSettings }) {
 
 function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToReplace, classType, chosenSettings }) {
   function handleReplace(trackData, e) {
-    setTrackToReplace(trackData);
-
     // generate list of replacements using track data
     let endpoint = '';
     let body = {};
+    body['trackNum']  = e.target.parentNode.id;
+    setTrackToReplace({"trackNum":e.target.parentNode.id, "trackData":trackData});
     if(classType === "pound") {
       endpoint = '/pound-replacement-options'
       body['setlist'] = setlistData;
-      body['trackNum']  = e.target.parentNode.id;
       body['includeArmTrack'] = chosenSettings['includeArmTrack'];
       body["difficulty"] = chosenSettings['difficulty'];
       body["length"] = chosenSettings['length'];
@@ -122,7 +122,6 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
     } else if(classType === "pom") {
       endpoint = '/pom-replacement-options'
       body['setlist'] = setlistData;
-      body['trackNum']  = e.target.parentNode.id;
     } else {
       console.log("class type not found");
     }
@@ -165,17 +164,12 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
 
   function handleSubmit(e) {
     e.preventDefault();
-    // newTrackId = e.target.id
-    // find index of trackToReplace in setlist data
-    // map( track => { if track.id === trackToReplace.id{ return getTrack(newTrackId)}} )???
-    // POST to update backend -- retuns updated??
-  
-    const requestOptions = {
-      method: 'PUT',
-      body: trackToReplace
-    };
 
     let endpoint = '';
+    let body = {};
+    body['trackNum'] = trackToReplace['trackNum'];
+    body['setlist'] = setlistData;
+    body['newTrackId'] = e.target.elements['replaceTrack'].value;
     if(classType === 'pound') {
       endpoint = '/pound-setlist';
     } else if(classType === 'pom') {
@@ -183,6 +177,12 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
     } else {
       console.log('classtype not found');
     }
+
+    const requestOptions = {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers: new Headers({'content-type': 'application/json'}),
+    };
 
     fetch(endpoint, requestOptions).then(res => res.json()).then(data => {
       setSetlistData(data);
@@ -204,8 +204,7 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
       <form onSubmit={handleSubmit}>
         <h3>{prompt}</h3>
         {replacementOptions.map(track => {
-            let value = (track.name + track.artist).toLowerCase().replaceAll(" ", "");
-            return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={value} label={track.name + " by " + track.artist} />
+            return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={track.id} label={track.name + " by " + track.artist} />
           })
         }
         <button type="submit" value="Replace">Replace</button>
