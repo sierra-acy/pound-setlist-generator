@@ -11,11 +11,11 @@ class PoundSetlistBuilder:
         self.version = str(version).lower()
         self.include_arm_track = include_arm_track
         self.template = self._parse_pound_setlist_template(template_location)
-        self.songs_location = './src/json/' + songs_location
+        self.songs_location = './cmdline/json/' + songs_location
         
     def _parse_pound_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
-        with open('./src/json/' + template_location, 'r') as template_file:
+        with open('./cmdline/json/' + template_location, 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
             template = data_json[self.difficulty][self.length][self.version]

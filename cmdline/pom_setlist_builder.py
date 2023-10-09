@@ -8,7 +8,7 @@ class PomSetlistBuilder:
         """ stores the setlist length and initializes template and empty setlist"""
         self.length = length
         self.template = self._parse_pom_setlist_template(template_location)
-        self.songs_location = './src/json/' + songs_location
+        self.songs_location = './cmdline/json/' + songs_location
 
     def build_setlist(self):
         """ Creates setlist for current template and vars """
@@ -58,7 +58,7 @@ class PomSetlistBuilder:
     def _parse_pom_setlist_template(self, template_location):
         """ Transform setlist from JSON file text to JSON object as global var """
 
-        with open('./src/json/' + template_location, 'r') as template_file:
+        with open('./cmdline/json/' + template_location, 'r') as template_file:
             data = template_file.read()
             data_json = json.loads(data)
             template = data_json[self.length]

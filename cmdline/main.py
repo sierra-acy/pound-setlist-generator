@@ -1,4 +1,3 @@
-from flask import Flask
 import argparse
 from main_pound import main_pound
 from main_pom import main_pom
