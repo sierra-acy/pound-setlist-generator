@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import "./App.css";
 
-// TODO: when returning from replacement page, repopulate settings with chosen settings
-// TODO: Add "none" level to pound track list and update api for this change
-function RadioOption({ id, name, value, label }) {
+function RadioOption({ id, name, value, label, chosen }) {
   return (
     <div>
-      <input type="radio" key={id} id={id} name={name} value={value}/>
+      <input type="radio" key={id} id={id} name={name} value={value} defaultChecked={chosen}/>
       <label htmlFor={id}>{label}</label>
     </div>
   );
 }
 
-function RadioGroup({ radioGroupLabel, name, optionsList }) {
-  let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} id={option.toLowerCase()} name={name} value={option.toLowerCase()} label={option} />)
+function RadioGroup({ radioGroupLabel, name, optionsList, chosen }) {
+let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} id={option.toLowerCase()} name={name} value={option.toLowerCase()} label={option} chosen={chosen === option.toLowerCase()} />)
   
   return (
     <div>
@@ -23,10 +21,10 @@ function RadioGroup({ radioGroupLabel, name, optionsList }) {
   );
 }
 
-function CheckboxOption({ label, name, value }) {
+function CheckboxOption({ label, name, checked }) {
   return(
     <div>
-      <input type="checkbox" id={name.toLowerCase()} name={name} value={value} />
+      <input type="checkbox" id={name.toLowerCase()} name={name} defaultChecked={checked} />
       <label htmlFor={name}>{label}</label>
     </div>
   );
@@ -38,7 +36,7 @@ function Track({ name, artist, type, level }) {
   );
 }
 
-function Settings( { classType, setSetlistData, setChosenSettings }) {
+function Settings( { classType, setSetlistData, setChosenSettings, chosenSettings }) {
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -53,7 +51,7 @@ function Settings( { classType, setSetlistData, setChosenSettings }) {
         "difficulty":elements['difficultySetting'].value,
         "length":elements['lengthSetting'].value,
         "version":elements['versionSetting'].value,
-        "includeArmTrack":elements['includeArmTrackSetting'].value
+        "includeArmTrack":elements['includeArmTrackSetting'].checked
       };
       setChosenSettings(currChosenSettings);
 
@@ -86,12 +84,26 @@ function Settings( { classType, setSetlistData, setChosenSettings }) {
 
   let settingsData = [];
   if (classType === 'pound') {
-    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Advanced"]}/>,
-    <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]}/>,
-    <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]}/>,
-    <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" value={false}/>]
+    let difficulty = '';
+    let length = '';
+    let version = '';
+    let includeArmTrack = false;
+    if(chosenSettings && Object.keys(chosenSettings).length > 0) {
+      difficulty = chosenSettings['difficulty'];
+      length = chosenSettings['length'];
+      version = chosenSettings['version'];
+      includeArmTrack = chosenSettings['includeArmTrack'];
+    }
+    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Advanced"]} chosen={difficulty} />,
+    <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]} chosen={length} />,
+    <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]} chosen={version} />,
+    <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" checked={includeArmTrack}/>]
   } else if (classType === 'pom') {
-    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["20","30","50"]}/>];
+    let length='';
+    if(chosenSettings && Object.keys(chosenSettings)) {
+      length = chosenSettings['length'];
+    }
+    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["20","30","50"]} chosen={length} />];
   }
 
   return(
@@ -218,7 +230,7 @@ function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setRe
     <div> 
       <div className="generator">
         <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType} chosenSettings={chosenSettings}/>
-        <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings}/>
+        <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings} chosenSettings={chosenSettings}/>
       </div>
     </div>
   );
