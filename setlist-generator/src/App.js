@@ -272,7 +272,7 @@ function App() {
   function handleChooseClass(e) {
     console.log("setting classType in App");
     let shouldContinue = false;
-    if(classType != "") {
+    if(classType !== "") {
       shouldContinue = window.confirm("Are you sure you want to switch formats? All progress will be lost. Click \"OK\" to continue.");
     } else {
       shouldContinue = true;
