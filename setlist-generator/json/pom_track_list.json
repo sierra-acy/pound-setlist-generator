@@ -4,6 +4,11 @@
             "id":1,
             "name":"Shout Out to My Ex",
             "artist":"Little Mix"
+        },
+        {
+            "id":18,
+            "name":"HOT TO GO!",
+            "artist":"Chappell Roan"
         }
     ],
     "prancing":[
@@ -68,6 +73,11 @@
             "id":13,
             "name":"I Love It (feat. Charli XCX)",
             "artist":"Icona Pop, Charli XCX"
+        },
+        {
+            "id":19,
+            "name":"get him back!",
+            "artist":"Olivia Rodrigo"
         }
     ],
     "kick":[
@@ -92,6 +102,11 @@
             "id":17,
             "name":"Flowers",
             "artist":"Miley Cyrus"
+        },
+        {
+            "id":20,
+            "name":"A Little Wicked",
+            "artist":"Valerie Broussard"
         }
     ]
 }

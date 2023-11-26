@@ -52,6 +52,12 @@
                 "name":"How You Like Me Now",
                 "artist":"The Heavy feat. The Dap-Kings Horns",
                 "canBeArmTrack":true
+            },
+            {
+                "id":32,
+                "name":"Cinderella Snapped",
+                "artist":"Jax",
+                "canBeArmTrack":false
             }
         ],
         "2": [
