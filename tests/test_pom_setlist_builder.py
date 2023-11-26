@@ -1,5 +1,5 @@
 import unittest
-from src.pom_setlist_builder import PomSetlistBuilder
+from cmdline.pom_setlist_builder import PomSetlistBuilder
 
 class TestPoundSetlistBuilder(unittest.TestCase):
     """ Tests PoundSetlistBuilder Class """
