@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { Header, Container, Radio,
+  Checkbox, Form, Button, List, ListItem, 
+  ListContent, Icon } from 'semantic-ui-react'
 import "./App.css";
 
 function RadioOption({ id, name, value, label, chosen }) {
   return (
     <div>
-      <input type="radio" key={id} id={id} name={name} value={value} defaultChecked={chosen}/>
-      <label htmlFor={id}>{label}</label>
+      <Radio label={label} key={id} id={id} name={name} value={value} defaultChecked={chosen}/>
     </div>
   );
 }
@@ -24,15 +26,14 @@ let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} 
 function CheckboxOption({ label, name, checked }) {
   return(
     <div>
-      <input type="checkbox" id={name.toLowerCase()} name={name} defaultChecked={checked} />
-      <label htmlFor={name}>{label}</label>
+      <Checkbox label={label} id={name.toLowerCase()} name={name} defaultChecked={checked} />
     </div>
   );
 }
 
 function Track({ name, artist, type, level }) {
   return(
-    <>{type ? type : ""} {level ? level : ""} { type || level ? ":" : ""} {name} by {artist}</>
+    <ListContent floated="left"><b>{type ? type : ""} {level ? level : ""} { type || level ? ":" : ""}</b> {name} by {artist}</ListContent>
   );
 }
 
@@ -108,11 +109,11 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
 
   return(
     <div>
-      <h2>Settings</h2>
-      <form onSubmit={handleSubmit}>
+      <Header as="h2">Settings</Header>
+      <Form onSubmit={handleSubmit}>
         {settingsData}
-        <button type="submit" value="Generate">Generate</button>
-      </form>
+        <Button color="green" type="submit" value="Generate">Generate</Button>
+      </Form>
     </div>
   );
 }
@@ -160,14 +161,17 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
   let id = 1;
   return (
     <div>
-      <h2>Setlist</h2>
-      <ol>
+      <Header as='h2'>Setlist</Header>
+      <List ordered relaxed>
         {setlistData.map(trackData => {
           let level = "level" in trackData ? trackData.level : false;
           let type = "type" in trackData ? trackData.type : false;
-          return <li id={id++} key={'li'+trackData.id}><Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} /><button type="button" onClick={(e) => handleReplace(trackData, e)}>Replace</button></li>
+          return <ListItem id={id++} key={'li'+trackData.id}>
+            <Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} />
+            <Button circular icon type="button" onClick={(e) => handleReplace(trackData, e)} title="Replace" floated="right" color="inverted green" size="mini"><Icon name="sync alternate" style={{pointerEvents:"none"}}/></Button>
+          </ListItem>
         })}
-      </ol>
+      </List>
     </div>
   );
 }
@@ -213,35 +217,33 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
 
   return(
     <div>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <h3>{prompt}</h3>
         {replacementOptions.map(track => {
             return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={track.id} label={track.name + " by " + track.artist} />
           })
         }
-        <button type="submit" value="Replace">Replace</button>
-      </form>
+        <Button color="green" type="submit" value="Replace">Replace</Button>
+      </Form>
     </div>
   );
 }
 
 function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace, chosenSettings, setChosenSettings }) {
   return(
-    <div> 
       <div className="generator">
         <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType} chosenSettings={chosenSettings}/>
         <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings} chosenSettings={chosenSettings}/>
       </div>
-    </div>
   );
 }
 
 function ClassSelector({ handleChooseClass }) {
   return(
-    <div>
-      <button type="button" onClick={handleChooseClass} value="pound">POUND</button>
-      <button type="button" onClick={handleChooseClass} value="pom">PomSquad</button>
-    </div>
+    <Container>
+      <Button type="button" onClick={handleChooseClass} value="pound" color="green">POUND</Button>
+      <Button type="button" onClick={handleChooseClass} value="pom" color="pink">PomSquad</Button>
+    </Container>
   );
 }
 
@@ -258,9 +260,12 @@ function MainContentSection({ classType }){
   
     let section = <></>
     if(isReplace) {
-      section = <ReplaceSection setlistData={setlistData} replacementOptions={replacementOptions} onSetlistChange={setSetlistData} setIsReplace={setIsReplace} trackToReplace={trackToReplace} setSetlistData={setSetlistData} classType={classType}/>;
+      section = <ReplaceSection setlistData={setlistData} replacementOptions={replacementOptions} onSetlistChange={setSetlistData} 
+      setIsReplace={setIsReplace} trackToReplace={trackToReplace} setSetlistData={setSetlistData} classType={classType}/>;
     } else if(classType.length !== 0) {
-      section = <SetlistGeneratorSection classType={classType} setlistData={setlistData} setSetlistData={setSetlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} chosenSettings={chosenSettings} setChosenSettings={setChosenSettings}/>
+      section = <SetlistGeneratorSection classType={classType} setlistData={setlistData} setSetlistData={setSetlistData} 
+      setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} 
+      chosenSettings={chosenSettings} setChosenSettings={setChosenSettings}/>
     }
 
     return section;
@@ -288,13 +293,13 @@ function App() {
 
   return (
     <React.StrictMode>
-    <div>
-      <header className="App-header">
-        <h2 onClick={() => setClassType("")}>Setlist Generator</h2><br/>
-        <ClassSelector handleChooseClass={handleChooseClass}/>
-      </header>
+    <Container>
+      <Container textAlign="center" id="header">
+        <Header as="h2" onClick={() => setClassType("")}>Setlist Generator</Header>
+        <ClassSelector handleChooseClass={handleChooseClass} />
+      </Container>
       <MainContentSection key={classType} classType={classType}/>
-    </div>
+    </Container>
     </React.StrictMode>
   );
 }
