@@ -84,6 +84,7 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
   }
 
   let settingsData = [];
+  let color = 'green';
   if (classType === 'pound') {
     let difficulty = '';
     let length = '';
@@ -105,6 +106,7 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
       length = chosenSettings['length'];
     }
     settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["20","30","50"]} chosen={length} />];
+    color = 'pink';
   }
 
   return(
@@ -112,7 +114,7 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
       <Header as="h2">Settings</Header>
       <Form onSubmit={handleSubmit}>
         {settingsData}
-        <Button color="green" type="submit" value="Generate">Generate</Button>
+        <Button color={color} type="submit" value="Generate">Generate</Button>
       </Form>
     </div>
   );
@@ -159,6 +161,7 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
   }
 
   let id = 1;
+  let color = classType === "pound" ? ' inverted green' : 'inverted pink';
   return (
     <div>
       <Header as='h2'>Setlist</Header>
@@ -168,7 +171,9 @@ function Setlist({ setlistData, setReplacementOptions, setIsReplace, setTrackToR
           let type = "type" in trackData ? trackData.type : false;
           return <ListItem id={id++} key={'li'+trackData.id}>
             <Track key={trackData.id} name={trackData.name} artist={trackData.artist} type={type} level={level} />
-            <Button circular icon type="button" onClick={(e) => handleReplace(trackData, e)} title="Replace" floated="right" color="inverted green" size="mini"><Icon name="sync alternate" style={{pointerEvents:"none"}}/></Button>
+            <Button circular icon type="button" onClick={(e) => handleReplace(trackData, e)} title="Replace"
+            floated="right" color={color} size="mini">
+              <Icon name="sync alternate" style={{pointerEvents:"none"}}/></Button>
           </ListItem>
         })}
       </List>
@@ -215,6 +220,7 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
   }
   prompt = prompt.concat("would you like to replace " + trackToReplace.name + " by " + trackToReplace.artist + " with?");
 
+  let color = classType === "pound" ? "green" : "pink";
   return(
     <div>
       <Form onSubmit={handleSubmit}>
@@ -223,7 +229,7 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
             return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={track.id} label={track.name + " by " + track.artist} />
           })
         }
-        <Button color="green" type="submit" value="Replace">Replace</Button>
+        <Button color={color} type="submit" value="Replace">Replace</Button>
       </Form>
     </div>
   );
