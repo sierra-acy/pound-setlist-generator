@@ -1,43 +1,42 @@
 import React, { useState } from "react";
-import { Header, Container, Radio,
-  Checkbox, Form, Button, List, ListItem, 
-  ListContent, Icon } from 'semantic-ui-react'
+import { Header, Container, Form, Button, List, ListItem,
+  ListContent, Icon, FormField, FormRadio, FormCheckbox } from 'semantic-ui-react'
 import "./App.css";
+
 
 function RadioOption({ id, name, value, label, chosen }) {
   return (
-    <div>
-      <Radio label={label} key={id} id={id} name={name} value={value} defaultChecked={chosen}/>
-    </div>
+      <FormRadio label={label} key={id} id={id} name={name} value={value} defaultChecked={chosen} />
   );
 }
 
 function RadioGroup({ radioGroupLabel, name, optionsList, chosen }) {
-let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} id={option.toLowerCase()} name={name} value={option.toLowerCase()} label={option} chosen={chosen === option.toLowerCase()} />)
+  let options = optionsList.map(option => <RadioOption key={option.toLowerCase()} id={option.toLowerCase()} name={name}
+  value={option.toLowerCase()} label={option} chosen={chosen === option.toLowerCase()} />)
   
   return (
-    <div>
-      <p>{radioGroupLabel}:</p>
+    <FormField required style={{paddingBottom:'2vh'}} >
+      <label>{radioGroupLabel}:</label>
       {options}
-    </div>
+    </FormField>
   );
 }
 
 function CheckboxOption({ label, name, checked }) {
   return(
-    <div>
-      <Checkbox label={label} id={name.toLowerCase()} name={name} defaultChecked={checked} />
-    </div>
+    <FormCheckbox label={label} id={name.toLowerCase()} name={name} defaultChecked={checked} style={{paddingBottom:'2vh'}} />
   );
 }
 
 function Track({ name, artist, type, level }) {
   return(
-    <ListContent floated="left"><b>{type ? type : ""} {level ? level : ""} { type || level ? ":" : ""}</b> {name} by {artist}</ListContent>
+    <ListContent floated="left">
+      <b>{type ? type : ""} {level ? level : ""} { type || level ? ":" : ""}</b> {name} by {artist}
+    </ListContent>
   );
 }
 
-function Settings( { classType, setSetlistData, setChosenSettings, chosenSettings }) {
+function Settings({ classType, setSetlistData, setChosenSettings, chosenSettings }) {
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -86,9 +85,9 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
   let settingsData = [];
   let color = 'green';
   if (classType === 'pound') {
-    let difficulty = '';
-    let length = '';
-    let version = '';
+    let difficulty = 'beginner';
+    let length = '15';
+    let version = 'a';
     let includeArmTrack = false;
     if(chosenSettings && Object.keys(chosenSettings).length > 0) {
       difficulty = chosenSettings['difficulty'];
@@ -96,16 +95,21 @@ function Settings( { classType, setSetlistData, setChosenSettings, chosenSetting
       version = chosenSettings['version'];
       includeArmTrack = chosenSettings['includeArmTrack'];
     }
-    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting" optionsList={["Beginner","Advanced"]} chosen={difficulty} />,
-    <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]} chosen={length} />,
-    <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]} chosen={version} />,
-    <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting" checked={includeArmTrack}/>]
+    settingsData = [<RadioGroup key="difficulty" radioGroupLabel="Class Difficulty" name="difficultySetting"
+    optionsList={["Beginner","Advanced"]} chosen={difficulty} />,
+    <RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["15","30","45"]}
+    chosen={length} />,
+    <RadioGroup key="version" radioGroupLabel="Setlist Version" name="versionSetting" optionsList={["A","B"]}
+    chosen={version} />,
+    <CheckboxOption key="includeArmTrack" label="Include Arm Track" name="includeArmTrackSetting"
+    checked={includeArmTrack}/>]
   } else if (classType === 'pom') {
-    let length='';
-    if(chosenSettings && Object.keys(chosenSettings)) {
+    let length = '20';
+    if(chosenSettings && Object.keys(chosenSettings).length > 0 ) {
       length = chosenSettings['length'];
     }
-    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting" optionsList={["20","30","50"]} chosen={length} />];
+    settingsData = [<RadioGroup key="length" radioGroupLabel="Class Length" name="lengthSetting"
+    optionsList={["20","30","50"]} chosen={length} />];
     color = 'pink';
   }
 
@@ -218,7 +222,8 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
   if("level" in trackToReplace) {
     prompt = prompt.concat("Level " + trackToReplace.level + " ")
   }
-  prompt = prompt.concat("would you like to replace " + trackToReplace.name + " by " + trackToReplace.artist + " with?");
+  prompt = prompt.concat("would you like to replace " + trackToReplace.name + " by " + trackToReplace.artist + 
+  " with?");
 
   let color = classType === "pound" ? "green" : "pink";
   return(
@@ -226,7 +231,8 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
       <Form onSubmit={handleSubmit}>
         <h3>{prompt}</h3>
         {replacementOptions.map(track => {
-            return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={track.id} label={track.name + " by " + track.artist} />
+            return <RadioOption key={track.id} id={track.id} name="replaceTrack" value={track.id}
+            label={track.name + " by " + track.artist} />
           })
         }
         <Button color={color} type="submit" value="Replace">Replace</Button>
@@ -235,11 +241,14 @@ function ReplaceSection ({ trackToReplace, replacementOptions, setlistData, setS
   );
 }
 
-function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace, setTrackToReplace, chosenSettings, setChosenSettings }) {
+function SetlistGeneratorSection({ classType, setlistData, setSetlistData, setReplacementOptions, setIsReplace,
+  setTrackToReplace, chosenSettings, setChosenSettings }) {
   return(
       <div className="generator">
-        <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace} setTrackToReplace={setTrackToReplace} classType={classType} chosenSettings={chosenSettings}/>
-        <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings} chosenSettings={chosenSettings}/>
+        <Setlist setlistData={setlistData} setReplacementOptions={setReplacementOptions} setIsReplace={setIsReplace}
+        setTrackToReplace={setTrackToReplace} classType={classType} chosenSettings={chosenSettings}/>
+        <Settings classType={classType} setSetlistData={setSetlistData} setChosenSettings={setChosenSettings}
+        chosenSettings={chosenSettings}/>
       </div>
   );
 }
@@ -284,7 +293,8 @@ function App() {
     console.log("setting classType in App");
     let shouldContinue = false;
     if(classType !== "") {
-      shouldContinue = window.confirm("Are you sure you want to switch formats? All progress will be lost. Click \"OK\" to continue.");
+      shouldContinue = window.confirm("Are you sure you want to switch formats? All progress will be lost. Click " +
+      "\"OK\" to continue.");
     } else {
       shouldContinue = true;
     }
@@ -294,7 +304,6 @@ function App() {
       // set class type to e.target.value
       setClassType(e.target.value);
     }
-    
   }
 
   return (
